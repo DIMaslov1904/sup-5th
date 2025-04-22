@@ -53,7 +53,11 @@ chrome.tabs.onUpdated.addListener(checkCurrentTab);
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   try {
     chrome.tabs.get(activeInfo?.tabId, function (tab) {
-      checkCurrentTab(activeInfo?.tabId, { status: 'complete' }, tab);
+      try {
+        checkCurrentTab(activeInfo?.tabId, { status: 'complete' }, tab);
+      } catch (e) {
+        return;
+      };
     })
   } catch (e) {
     return;
