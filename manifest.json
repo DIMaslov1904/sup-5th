@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Svime",
+  "version": "2.1",
+  "description": "Расширение поддержки 5-го измерения", 
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "unlimitedStorage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon-16.png",
+      "32": "images/icon-32.png",
+      "48": "images/icon-48.png",
+      "128": "images/icon-128.png"
+    }
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["support.js"],
+      "css": ["support.css"],
+      "matches": [
+        "https://support.5th.ru/*"
+      ]
+    }
+  ]
+}
