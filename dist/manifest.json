@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Sup 5th",
+  "version": "3.0.0",
+  "description": "Расширение поддержки 5-го измерения",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "Vue Extension"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [ "https://support.5th.ru/*"],
+      "js": ["support_js.js"],
+      "css": ["support_css.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/popup/*", "*.js", "*.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

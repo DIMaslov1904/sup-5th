@@ -1,0 +1,1 @@
+console.log("Контентный скрипт запущен");chrome.runtime.onMessage.addListener((e,o,t)=>{console.log("Сообщение, полученное в скрипте содержимого:",e),e.type==="GET_PAGE_INFO"&&t({title:document.title,url:window.location.href,timestamp:Date.now()})});chrome.runtime.sendMessage({type:"PAGE_LOADED",url:window.location.href,title:document.title});

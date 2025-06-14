@@ -1,0 +1,1 @@
+chrome.runtime.onInstalled.addListener(()=>{console.log("Установленное расширение")});chrome.runtime.onMessage.addListener((e,n,r)=>{if(console.log("Сообщение из background:",e),e.type==="GET_TAB_INFO")return chrome.tabs.query({active:!0,currentWindow:!0},t=>{r({tab:t[0]})}),!0});
