@@ -39,7 +39,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/popup/*", "*.js", "*.css"],
+      "resources": ["src/popup/*", "*.js", "*.css", "assets/*"],
       "matches": ["<all_urls>"]
     }
   ]

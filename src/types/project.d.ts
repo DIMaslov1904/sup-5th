@@ -11,5 +11,13 @@ type Project = {
   addDocument: string
   isGitPull: boolean
   updateAt: number
-  isImg: boolean
+  isImg: boolean,
+  widgetPosition?: { x: number; y: number }
+}
+
+type ProjectStorage = {
+  projects: Project[]
+  isLoading: boolean
+  isLoadingIMG: boolean
+  isLoadingAccess: boolean
 }
