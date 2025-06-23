@@ -3,13 +3,10 @@
     <transition name="fade">
       <Welcome v-if="store.state.init" />
     </transition>
-    <transition name="fade">
-      <SelectProject v-if="selectedSite" :project="selectedSite" @backward="setSite(null)" />
-    </transition>
-    <PopupContent v-if="!isLoading" :fixHeight="!(!selectedSite && (store.state.page === 'projectList' && projectsStore.state.projects.length > 3))">
+    <PopupContent v-if="!isLoading" :fixHeight="!(!selectProjectState.state?.url && (store.state.page === 'projectList' && projectsStore.state.projects.length > 3))">
       <Current v-if="store.state.page === 'currentSite'" />
       <Utility v-else-if="store.state.page === 'utility'" />
-      <ProjectList v-else-if="store.state.page === 'projectList'" @setSite="setSite" />
+      <ProjectList v-else-if="store.state.page === 'projectList'"/>
       <Settings v-else-if="store.state.page === 'settings'" />
       <Audit v-else-if="store.state.page === 'audit'" />
       <Notification v-else-if="store.state.page === 'notification'" />
@@ -49,7 +46,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useMainStore, useProjectsStore, useNoticeStore } from '@/stores'
+import { useMainStore, useProjectsStore, useNoticeStore, useSelectProjectStore } from '@/stores'
 import CloudChangeIcon from '@/components/icons/CloudChangeIcon.vue';
 import ConvertIcon from '@/components/icons/ConvertIcon.vue';
 import FolderIcon from '@/components/icons/FolderIcon.vue';
@@ -70,24 +67,19 @@ import Notification from '@/pages/Notification.vue';
 import Audit from '@/pages/Audit.vue';
 import Settings from '@/pages/Settings.vue';
 import CloudChangeAnimIcon from '@/components/icons/CloudChangeAnimIcon.vue';
-import SelectProject from '@/pages/SelectProject.vue';
 
 const isLoading = ref(true)
 
 const store = useMainStore()
 const projectsStore = useProjectsStore()
 const noticeStore = useNoticeStore()
-
-const selectedSite = ref<Project | null>(null)
-
-const setSite = (site: Project | null) => {
-  selectedSite.value = site
-}
+const selectProjectState = useSelectProjectStore()
 
 onMounted(async () => {
   await store.loadFromStorage()
   await projectsStore.loadFromStorage()
   await noticeStore.loadFromStorage()
+  await selectProjectState.loadFromStorage()
   isLoading.value = false
 })
 </script>

@@ -212,7 +212,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     await updateAccess();
   };
 
-  const saveToStorage = () => setToStorage(STORAGE_NAME, state.value);
+  const saveToStorage = () => setToStorage(STORAGE_NAME, {projects: state.value.projects});
 
   const loadFromStorage = async () => {
     const result = await getFromStorage(STORAGE_NAME);

@@ -26,12 +26,11 @@ defineEmits < {
   width: 100%;
   border-radius: 8px;
   background-color: var(--color-bg-body);
-  color: #fff;
   z-index: 20;
   overflow: auto;
 
   display: grid;
-  grid-template-columns: 604px 56px;
+  grid-template-columns: 1fr 56px;
 
   &.fade-enter-active,
   &.fade-leave-active {
