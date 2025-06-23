@@ -16,7 +16,7 @@ const project = ref<Project | null>(null)
 onMounted(async () => {
   const curTab = await getCurrentTab()
   if (curTab) { 
-    project.value = projectsStore.state.projects.find((el: Project) => el.url ? curTab.url?.includes(el.url) : false)
+    project.value = projectsStore.state.projects.find((el: Project) => el.url ? (el.subdomain ? curTab.url?.includes(el.url) : curTab.url===el.url) : false)
   }
 })
 </script>

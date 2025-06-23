@@ -16,6 +16,7 @@ const defaultState = () => ({
 const defaultStateOne = (): Project => ({
   name: "",
   url: "",
+  subdomain: false,
   urlAdmin: "",
   cms: "Нет",
   login: "",
@@ -116,48 +117,55 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
         ? [...Array(state.value.projects.length).keys()]
         : [];    
 
-    for (const item of res.result) {
-      const newItem = {
-        name: item[0],
-        url: cleanUrl(item[1]).replace("/", ""),
-        urlAdmin: cleanUrl(item[3]),
-        cms: item[4],
-        manual: cleanUrl(item[2]),
-        git: cleanUrl(item[5]),
-        figma: cleanUrl(item[6]),
-        addDocument: cleanUrl(item[7]),
-      };
-      const indexItem = getItem(newItem.url);
+    try {
+      for (const item of res.result) {
+            const newItem = {
+              name: item[0],
+              url: cleanUrl(item[1]).replace("/", ""),
+              subdomain: item[2],
+              urlAdmin: cleanUrl(item[4]),
+              cms: item[5],
+              manual: cleanUrl(item[3]),
+              git: cleanUrl(item[6]),
+              figma: cleanUrl(item[7]),
+              addDocument: cleanUrl(item[8]),
+            };
+            const indexItem = getItem(newItem.url);
 
-      if (indexItem !== -1) {
-        indexs = indexs.filter((item: number) => item !== indexItem);
-        countUpdate++;
-        await updateItem(indexItem, newItem);
-      } else {
-        constAdd++;
-        await add({ ...defaultStateOne(), ...newItem });
-      }
+            if (indexItem !== -1) {
+              indexs = indexs.filter((item: number) => item !== indexItem);
+              countUpdate++;
+              await updateItem(indexItem, newItem);
+            } else {
+              constAdd++;
+              await add({ ...defaultStateOne(), ...newItem });
+            }
+          }
+
+          if (indexs.length !== 0)
+            indexs.forEach((index: number) =>
+              notFounds.push(
+                `${state.value.projects[index].name} (${state.value.projects[index].url})`
+              )
+            );
+
+          noticeStore.add(
+            "success",
+            "Проекты загружены<br>" +
+              (countUpdate > 0 ? `Обновлено проектов: ${countUpdate}шт.<br>` : "") +
+              (constAdd > 0 ? `Добавлено проектов: ${constAdd}шт.` : "") +
+              (notFounds.length > 0
+                ? `<br>Нет в общем списке:<ol><li>${notFounds.join(";</li><li> ")}</li></ol>`
+              : ""),
+            10
+          );
+
+      saveToStorage();
+    } catch (e) {
+      noticeStore.add("error", "<b>Ошибка загрузки проектов:</b><br>Не верная структура таблицы");
+      console.error(e)
     }
-
-    if (indexs.length !== 0)
-      indexs.forEach((index: number) =>
-        notFounds.push(
-          `${state.value.projects[index].name} (${state.value.projects[index].url})`
-        )
-      );
-
-    noticeStore.add(
-      "success",
-      "Проекты загружены<br>" +
-        (countUpdate > 0 ? `Обновлено проектов: ${countUpdate}шт.<br>` : "") +
-        (constAdd > 0 ? `Добавлено проектов: ${constAdd}шт.` : "") +
-        (notFounds.length > 0
-          ? `<br>Нет в общем списке:<ol><li>${notFounds.join(";</li><li> ")}</li></ol>`
-        : ""),
-      10
-    );
-
-    saveToStorage();
+    
     state.value.isLoading = false;
     state.value.isLoadingIMG = false;
   };

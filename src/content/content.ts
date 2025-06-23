@@ -8,7 +8,7 @@ const cmsList: { [key: string]: string } = {
   Joomla: 'administrator/',
 }
 
-const getUrlAdminLogin = (url: string, urlAdmin: string, cms: CMSName) => {
+const getUrlAdminLogin = (urlAdmin: string, cms: CMSName) => {
   switch (cms) {
     case 'Своя':
     case 'WordPress':
@@ -16,7 +16,7 @@ const getUrlAdminLogin = (url: string, urlAdmin: string, cms: CMSName) => {
     case 'Тильда':
       return "https://tilda.ru/login/"
     default:
-      return `https://${url}/${cmsList[cms]}`
+      return `/${cmsList[cms]}`
   }
 }
 
@@ -48,7 +48,7 @@ const checkCurrentProject = async (): Promise<void> => {
   storage = await getFromStorage() as ProjectStorage
   if (!storage) return
   const currentDomain = new URL(window.location.href).hostname
-  currentProject = storage.projects.find(project => project.url ? currentDomain.includes(project.url) : false) || null
+  currentProject = storage.projects.find(project => project.url ? (project.subdomain ? currentDomain.includes(project.url) : currentDomain===project.url) : false) || null
   if (currentProject) createFloatingWidget()
 }
 
@@ -109,7 +109,6 @@ const createFloatingWidget =(): void => {
   
   makeDraggable(floatingWidget)
 
-  floatingWidget.addEventListener('click', handleWidgetClick)
   document.body.appendChild(floatingWidget)
   floatingWidget.style.setProperty("--width", `${floatingWidget.clientWidth}px`)
   floatingWidget.style.setProperty("--height", `${floatingWidget.clientHeight}px`)
@@ -141,8 +140,13 @@ const makeDraggable = (element: HTMLElement): void => {
     }, 500)
   })
 
-  document.body.addEventListener("mouseup", async () => {
-    if (timer) clearTimeout(timer)
+  document.body.addEventListener("mouseup", async (e) => {
+    if (timer) {
+      clearTimeout(timer)
+      if (currentProject && !dragging && e.button === 0) {
+        window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms) || '', '_blank')
+      }
+    }
     dragging = false
     element.classList.remove('dragging')
     if (!currentProject) return
@@ -162,18 +166,6 @@ async function saveWidgetPosition(): Promise<void> {
   if (!storage) return
   storage.projects = storage.projects.map((item: any) => (item.url === currentProject?.url) ? { ...item, widgetPosition: currentProject?.widgetPosition } : item)
   await setToStorage(storage)
-}
-
-function handleWidgetClick(e: MouseEvent): void {
-  if (e.target !== e.currentTarget) return
-  if (!currentProject) return
-  window.open(getUrlAdminLogin(currentProject.url, currentProject.urlAdmin, currentProject.cms) || '', '_blank')
-  
-  // Отправляем сообщение в popup/background
-  // chrome.runtime.sendMessage({
-  //   type: 'WIDGET_CLICKED',
-  //   project: currentProject
-  // })
 }
 
 checkCurrentProject()

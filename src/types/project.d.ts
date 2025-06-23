@@ -1,6 +1,7 @@
 type Project = {
   name: string
-  url: string
+  url: string,
+  subdomain: boolean
   urlAdmin: string
   cms: CMSName
   login: string
