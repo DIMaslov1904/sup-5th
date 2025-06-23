@@ -20,6 +20,14 @@ const getUrlAdminLogin = (urlAdmin: string, cms: CMSName) => {
   }
 }
 
+const getVal = (num: number, attr: {min?: number, max?: number} = {}) : number => {
+  if (!num) return 0
+  let res = Math.trunc(num)
+  if (attr.min !== undefined) res = Math.max(res, attr.min)
+  if (attr.max !== undefined) res = Math.min(res, attr.max)
+  return res
+}
+
 let storage: ProjectStorage | null = null,
 currentProject: Project | null = null,
 floatingWidget: HTMLElement | null = null
@@ -105,7 +113,7 @@ const createFloatingWidget =(): void => {
 
   const position = currentProject?.widgetPosition || { x: 0, y: 0 }
   floatingWidget.style.setProperty("--x", `${position.x}dvw`)
-  floatingWidget.style.setProperty("--y", `${position.x}dvh`)
+  floatingWidget.style.setProperty("--y", `${position.y}dvh`)
   
   makeDraggable(floatingWidget)
 
@@ -154,17 +162,21 @@ const makeDraggable = (element: HTMLElement): void => {
     await saveWidgetPosition()
   })
 
+  
+
   document.body.addEventListener('mousemove', (e) => {
     if (!dragging) return
-    element.style.setProperty("--x", `${(startX - e.pageX) * -100 / window.innerWidth}dvw`)
-    element.style.setProperty("--y", `${(startY - e.pageY) * -100 / window.innerHeight}dvh`)
+    element.style.setProperty("--x", `${getVal(((startX - e.pageX) * -100 / window.innerWidth), {min: -99, max: 0})}dvw`)
+    element.style.setProperty("--y", `${getVal(((startY - e.pageY) * -100 / window.innerHeight), {min: -99, max: 0})}dvh`)
   })
 }
 
 async function saveWidgetPosition(): Promise<void> {
   storage = await getFromStorage() as ProjectStorage
   if (!storage) return
-  storage.projects = storage.projects.map((item: any) => (item.url === currentProject?.url) ? { ...item, widgetPosition: currentProject?.widgetPosition } : item)
+  let widgetPosition = undefined
+  if (currentProject?.widgetPosition && (currentProject.widgetPosition.x || currentProject.widgetPosition?.y)) widgetPosition = currentProject.widgetPosition
+  storage.projects = storage.projects.map((item: any) => (item.url === currentProject?.url) ? { ...item, widgetPosition } : item)
   await setToStorage(storage)
 }
 
