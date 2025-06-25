@@ -8,7 +8,7 @@ const STORAGE_NAME = 'mainState'
 const defaultState = () => ({
   page: 'currentSite',
   apiUrl: URL_ALL_PROJECTS,
-  apiAccessUrl: 'https://site.5th.ru/dimaslov.json', //TODO: убрать
+  apiAccessUrl: '',
   hiddenAdmButton: false
 })
 

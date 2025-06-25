@@ -31,6 +31,8 @@ const defaultStateOne = (): Project => ({
 });
 export const useProjectsStore = defineStore(STORAGE_NAME, () => {
   const state = ref<any>(defaultState());
+  let projectUrls: string[] = []
+
 
   const edit = (num: number, name: string, data: any) => {
     state.value.projects = state.value.projects.map((item: any) => {
@@ -59,22 +61,26 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     ];
   };
 
-  // const remove = (num: number) => {
-  //   state.value.projects = state.value.projects.filter(
-  //     (_: object, i: number) => i !== num
-  //   );
-  // };
+  const remove = (url: string) => {
+    state.value.projects = state.value.projects.filter(
+      (el: Project) => el.url !== url
+    );
+  };
 
   const getItem = (url: string) => {
     return state.value.projects.findIndex((item: any) => item.url === url);
   };
 
   const updateItem = async (index: number, data: any) => {
+    let isUpdate = false
     state.value.projects = state.value.projects.map((item: any, i: number) => {
-      if (i === index)
-        return { ...item, ...data, updateAt: new Date().getTime() };
+      if (i === index) {
+        for (const k in data) if (data[k] !== item[k]) isUpdate = true
+        if (isUpdate) return { ...item, ...data, updateAt: new Date().getTime()};
+      }
       return item;
     });
+    return isUpdate
   };
 
   const updateIsImg = async () => {
@@ -131,11 +137,13 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
               addDocument: cleanUrl(item[8]),
             };
             const indexItem = getItem(newItem.url);
-
+            
             if (indexItem !== -1) {
               indexs = indexs.filter((item: number) => item !== indexItem);
-              countUpdate++;
-              await updateItem(indexItem, newItem);
+              projectUrls = projectUrls.filter(el => el !== newItem.url)
+              if (await updateItem(indexItem, newItem)) { 
+                countUpdate++;
+              }
             } else {
               constAdd++;
               await add({ ...defaultStateOne(), ...newItem });
@@ -187,8 +195,10 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
       };
       const indexItem = getItem(newItem.url);
       if (indexItem !== -1) {
-        countUpdate++;
-        await updateItem(indexItem, newItem);
+        projectUrls = projectUrls.filter(el => el !== newItem.url)
+        if (await updateItem(indexItem, newItem)) {
+          countUpdate++;
+        }
       } else {
         newProjects.push(`${item[0]} (${newItem.url})`);
         await add({ ...defaultStateOne(), ...newItem, name: item[0] });
@@ -199,7 +209,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
       "success",
       "Доступы загружены<br>" +
         (countUpdate > 0 ? `Обновлены доступы: ${countUpdate}шт.<br>` : "") +
-      (newProjects.length > 0 ? `Добавлено проектов из личного доступа:<ol> <li>${newProjects.join(";</li><li> ").slice(0, -3)}.</li></ol>` : ""),
+      (newProjects.length > 0 ? `Добавлено проектов из личного доступа:<ol> <li>${newProjects.join(";</li><li> ")}.</li></ol>` : ""),
       10
     );
 
@@ -208,8 +218,27 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
   };
 
   const updateAll = async () => {
+    const noticeStore = useNoticeStore();
+
+    state.value.projects.forEach((el: Project) => projectUrls.push(el.url))
     await update();
     await updateAccess();
+
+    let deleteProjects = 0
+
+    projectUrls.forEach((url: string) => { 
+      remove(url)
+      deleteProjects++
+    })
+
+    if (deleteProjects > 0) { 
+      noticeStore.add(
+        "success",
+        `Проектов удалено: ${deleteProjects}шт.<br>` +
+        `Проекты, которых больше вам не доступны:<ol> <li>${projectUrls.join(";</li><li> ")}.</li></ol>`
+      );
+    }
+    projectUrls = [];
   };
 
   const saveToStorage = () => setToStorage(STORAGE_NAME, {projects: state.value.projects});
