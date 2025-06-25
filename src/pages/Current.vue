@@ -1,5 +1,5 @@
 <template>
-  <p v-if="!project">Сайт на данной вкладке не является проектом 5 измерения</p>
+  <p v-if="!project" class="empty">Данный сайнт не найдев в ативных проектах 5 измерения</p>
   <CurrentContent v-else :project />
 </template>
 
@@ -20,3 +20,14 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.empty {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+</style>

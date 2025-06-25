@@ -24,9 +24,8 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           popup: resolve(__dirname, 'src/popup/index.html'),
-          content: resolve(__dirname, 'src/content/content.ts'),
-          support_js: resolve(__dirname, 'src/content/support.js'),
-          support_css: resolve(__dirname, 'src/content/support.css'),
+          widget: resolve(__dirname, 'src/content/widget.ts'),
+          support: resolve(__dirname, 'src/content/support.js'),
           background: resolve(__dirname, 'src/background/background.ts'),
         },
         output: {

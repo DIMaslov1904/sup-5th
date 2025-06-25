@@ -1,3 +1,5 @@
+import './support.css'
+
 (function () {
   function createModal(name, fnOpen, fnClose) {
     if (document.getElementById(name)) {

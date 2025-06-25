@@ -27,13 +27,13 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["widget.js"],
       "run_at": "document_end"
     },
     {
       "matches": [ "https://support.5th.ru/*"],
-      "js": ["support_js.js"],
-      "css": ["support_css.css"],
+      "js": ["support.js"],
+      "css": ["support.css"],
       "run_at": "document_end"
     }
   ],

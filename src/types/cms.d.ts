@@ -1,1 +1,1 @@
-type CMSName = 'UMI'|'EzPro'|'Bitrix'|'ABO'|'MODX'|'AdminLTE'|'Joomla'|'Своя'|'WordPress'|'Тильда'|'Нет'|''
+type CMSName = 'UMI'|'EzPro'|'Bitrix'|'ABO'|'MODX'|'AdminLTE'|'Joomla'|'Своя'|'WordPress'|'Tilda'|'Нет'|''

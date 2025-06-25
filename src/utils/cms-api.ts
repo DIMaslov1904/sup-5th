@@ -10,10 +10,13 @@ const cmsList: { [key: string]: string } = {
 
 export const getUrlAdminLogin = (url: string, urlAdmin: string, cms: CMSName) => {
   switch (cms) {
+    case 'Нет':
+    case '':
+      return '#'
     case 'Своя':
     case 'WordPress':
       return `https://${urlAdmin}`
-    case 'Тильда':
+    case 'Tilda':
       return "https://tilda.ru/login/"
     default:
       return `https://${url}/${cmsList[cms]}`
