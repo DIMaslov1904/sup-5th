@@ -99,9 +99,24 @@ const loginAdminPanelSecond = async () => {
     inputLoginBtn.click()
   }
 
+  const loginModx = async () => { 
+    if (!document.querySelector('[name=username]')) return
+    const inputLogin = document.querySelector('[name=username]') as HTMLInputElement,
+      inputPassword = document.querySelector('[name=password]') as HTMLInputElement,
+      inputRemember = document.querySelector('[name=rememberme]') as HTMLInputElement,
+      inputLoginBtn = document.querySelector('[name=login]') as HTMLInputElement
+    inputLogin.value = currentProject?.login || ''
+    inputPassword.value = currentProject?.password || ''
+    inputRemember.checked = true
+    inputLoginBtn.click()
+  }
+
   switch (currentProject?.cms) {
     case "Bitrix":
       await loginBitrix();
+      break;
+    case "MODX":
+      await loginModx();
       break;
   }
   sessionStorage.removeItem('login')
@@ -143,11 +158,19 @@ const loginAdminPanel = async (target: string) => {
     window.open(urlLoginAdmin, target);
   };
 
+  const loginModx = async () => { 
+    const urlLoginAdmin = '/manager/'
+    sessionStorage.setItem('login', '1')
+    window.open(urlLoginAdmin, target);
+  }
+
   switch (currentProject?.cms) {
     case "UMI":
       return await loginUmi();
     case "Bitrix":
       return await loginBitrix();
+    case "MODX":
+      return await loginModx();
     default: window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms), target);
   }
 };
