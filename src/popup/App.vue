@@ -23,7 +23,7 @@
         <FolderIcon v-if="projectsStore.state.projects.length > 0" />
         <FolderIconEmpty v-else />
       </PopupNavItem>
-      <PopupNavItem title="Обновить данные" @click="projectsStore.updateAll"
+      <PopupNavItem title="Обновить проекты и доступы" @click="projectsStore.updateAll"
         :active="projectsStore.state.isLoading || projectsStore.state.isLoadingAccess"
         :disabled="projectsStore.state.isLoading || projectsStore.state.isLoadingAccess">
         <CloudChangeAnimIcon v-if="projectsStore.state.isLoading || projectsStore.state.isLoadingAccess" />

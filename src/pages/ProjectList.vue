@@ -7,6 +7,7 @@
     <header class="projects-header">
       <Checkbox label="Есть доступ" v-model="isAccess" />
       <Search v-model="searchComputed" />
+      <Button @click="projectsStore.updateAccess">Обновить доступы</Button>
     </header>
     <ul class="project-list" >
       <ProjectItem v-for="project in ( isAccess || search ? projectsStore.state.projects.filter(filterProjects) : projectsStore.state.projects)" :key="project.url" :project="project" @setSite="selectProjectState.setProject(project)" />
@@ -23,6 +24,7 @@ import Checkbox from '@/components/ui/Checkbox.vue'
 import Search from '@/components/ui/Search.vue'
 import EmptyProjects from '@/components/EmptyProjects.vue'
 import SelectProject from '@/pages/SelectProject.vue';
+import Button from '@/components/ui/Button.vue'
 
 const projectsStore = useProjectsStore()
 const isAccess = ref(false)
