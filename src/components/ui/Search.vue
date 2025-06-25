@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <Input v-model="model" class="search__input" />
-    <Button @click="model = ''" class="search__reset">
+    <Button v-if="model" @click="model = ''" class="search__reset">
       <CloseIcon/>
     </Button>
   </div>

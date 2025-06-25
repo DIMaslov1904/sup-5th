@@ -7,7 +7,6 @@
     <header class="projects-header">
       <Checkbox label="Есть доступ" v-model="isAccess" />
       <Search v-model="searchComputed" />
-      <Button>Настройки</Button>
     </header>
     <ul class="project-list" >
       <ProjectItem v-for="project in ( isAccess || search ? projectsStore.state.projects.filter(filterProjects) : projectsStore.state.projects)" :key="project.url" :project="project" @setSite="selectProjectState.setProject(project)" />
@@ -20,7 +19,6 @@ import { ref, computed } from 'vue'
 import switcher from '@/utils/switcher'
 import { useProjectsStore, useSelectProjectStore } from '@/stores'
 import ProjectItem from '@/components/ProjectItem.vue'
-import Button from '@/components/ui/Button.vue'
 import Checkbox from '@/components/ui/Checkbox.vue'
 import Search from '@/components/ui/Search.vue'
 import EmptyProjects from '@/components/EmptyProjects.vue'
