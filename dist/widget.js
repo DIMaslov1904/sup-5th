@@ -82,6 +82,13 @@ const loginAdminPanelSecond = async () => {
     inputRemember.checked = true;
     inputLoginBtn.click();
   };
+  const loginTilda = async () => {
+    if (!document.querySelector("[name=email]")) return;
+    const inputLogin = document.querySelector("[name=email]"), inputPassword = document.querySelector("[name=password]"), inputLoginBtn = document.querySelector("#send");
+    inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
+    inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
+    if (!document.querySelector("#recaptcha_div")) inputLoginBtn.click();
+  };
   switch (currentProject == null ? void 0 : currentProject.cms) {
     case "Bitrix":
       await loginBitrix();
@@ -89,6 +96,8 @@ const loginAdminPanelSecond = async () => {
     case "MODX":
       await loginModx();
       break;
+    case "Tilda":
+      await loginTilda();
   }
   sessionStorage.removeItem("login");
 };
@@ -147,6 +156,17 @@ const loginAdminPanel = async (target) => {
     });
     window.open(urlAdmin, target);
   };
+  const loginTilda = async () => {
+    const urlAdmin = "https://tilda.ru/projects/";
+    const urlLoginAdmin = "https://tilda.ru/login/";
+    try {
+      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: "error" });
+      return window.open(urlAdmin, target);
+    } catch (er) {
+    }
+    chrome.storage.local.set({ "tildaLogin": JSON.stringify(currentProject) });
+    window.open(urlLoginAdmin, target);
+  };
   switch (currentProject == null ? void 0 : currentProject.cms) {
     case "UMI":
       return await loginUmi();
@@ -156,16 +176,25 @@ const loginAdminPanel = async (target) => {
       return await loginModx();
     case "ABO":
       return await loginAbo();
+    case "Tilda":
+      return await loginTilda();
     default:
       window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms), target);
   }
 };
-const checkAdmin = () => {
+const checkAdmin = async () => {
   if (!currentProject || !window.location.href.includes(currentProject == null ? void 0 : currentProject.urlAdmin)) return;
   isAdminPage = true;
   if (sessionStorage.getItem("login")) loginAdminPanelSecond();
 };
 const checkCurrentProject = async () => {
+  if (window.location.href.includes("tilda.ru/login")) {
+    const result = await chrome.storage.local.get(["tildaLogin"]);
+    if (result["tildaLogin"] !== void 0) {
+      currentProject = JSON.parse(result["tildaLogin"]);
+      loginAdminPanelSecond();
+    }
+  }
   storage = await getFromStorage();
   if (!storage) return;
   const currentDomain = new URL(window.location.href).hostname;
