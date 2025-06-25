@@ -127,7 +127,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
       for (const item of res.result) {
             const newItem = {
               name: item[0],
-              url: cleanUrl(item[1]).replace("/", ""),
+              url: cleanUrl(item[1]).replaceAll("/", ""),
               subdomain: item[2],
               urlAdmin: cleanUrl(item[4]),
               cms: item[5],
@@ -189,7 +189,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
 
     for (const item of res.result) {
       const newItem = {
-        url: cleanUrl(item[1]).replace("/", ""),
+        url: cleanUrl(item[1]).replaceAll("/", ""),
         login: item[2],
         password: item[3],
       };
@@ -216,7 +216,6 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     saveToStorage();
     state.value.isLoadingAccess = false;
   };
-
   const updateAll = async () => {
     const noticeStore = useNoticeStore();
 

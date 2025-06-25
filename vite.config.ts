@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: false,
-      minify: true,
+      minify: false,
       sourcemap: false
     },
     resolve: {

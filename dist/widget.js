@@ -1,4 +1,217 @@
-const k={UMI:"admin/content/sitetree/",EzPro:"ezpro/",Bitrix:"bitrix/admin/#authorize",ABO:"login.php",MODX:"manager/",AdminLTE:"admin/",Joomla:"administrator/"},v=(t,n)=>{switch(n){case"Нет":case"":return"#";case"Своя":case"WordPress":return`https://${t}`;case"Tilda":return"https://tilda.ru/login/";default:return`/${k[n]}`}},p=(t,n={})=>{if(!t)return 0;let i=Math.trunc(t);return n.min!==void 0&&(i=Math.max(i,n.min)),n.max!==void 0&&(i=Math.min(i,n.max)),i};let d=null,e=null,s=null,w=!1;const h="projectsState",f=t=>{let n=t==="Своя"?"cms":t==="Нет"?"hosting":t.toLowerCase();return chrome.runtime.getURL(`/assets/icons/${n}.svg`)},g=async()=>{try{const t=await chrome.storage.local.get([h]);return t[h]!==void 0?JSON.parse(t[h]):null}catch(t){return console.error("Ошибка при получении из хранилища:",t),null}},x=async t=>{try{await chrome.storage.local.set({[h]:JSON.stringify(t)})}catch(n){console.error("Ошибка при сохранении в хранилище:",n)}},C=async()=>{var n;if(d=await g(),!d)return;let t;e!=null&&e.widgetPosition&&(e.widgetPosition.x||(n=e.widgetPosition)!=null&&n.y)&&(t=e.widgetPosition),d.projects=d.projects.map(i=>i.url===(e==null?void 0:e.url)?{...i,widgetPosition:t}:i),await x(d)},M=async()=>{if(!(e!=null&&e.cms))return;const t=async()=>{if(!document.querySelector("[name=USER_LOGIN]"))return;const i=document.querySelector("[name=USER_LOGIN]"),o=document.querySelector("[name=USER_PASSWORD]"),r=document.querySelector("[name=USER_REMEMBER]"),l=document.querySelector("[name=Login]");i.value=(e==null?void 0:e.login)||"",o.value=(e==null?void 0:e.password)||"",r.checked=!0,l.click()},n=async()=>{if(!document.querySelector("[name=username]"))return;const i=document.querySelector("[name=username]"),o=document.querySelector("[name=password]"),r=document.querySelector("[name=rememberme]"),l=document.querySelector("[name=login]");i.value=(e==null?void 0:e.login)||"",o.value=(e==null?void 0:e.password)||"",r.checked=!0,l.click()};switch(e==null?void 0:e.cms){case"Bitrix":await t();break;case"MODX":await n();break}sessionStorage.removeItem("login")},b=async t=>{if(!(e!=null&&e.cms))return window.open(e==null?void 0:e.urlAdmin,t);const n=async()=>{const r="/admin/content/sitetree/",l="/admin/users/login_do/";try{return await fetch(r,{method:"HEAD",credentials:"include",redirect:"error"}),window.open(r,t)}catch{}const c=new FormData;Object.entries({login:e==null?void 0:e.login,password:e==null?void 0:e.password,ilang:"ru","save-auth-token":1}).forEach(([u,a])=>c.append(u,(a==null?void 0:a.toString())||"")),await fetch(l,{method:"POST",body:c,credentials:"include"}),window.open(r,t)},i=async()=>{const r="/bitrix/admin/#authorize";sessionStorage.setItem("login","1"),window.open(r,t)},o=async()=>{const r="/manager/";sessionStorage.setItem("login","1"),window.open(r,t)};switch(e==null?void 0:e.cms){case"UMI":return await n();case"Bitrix":return await i();case"MODX":return await o();default:window.open(v(e.urlAdmin,e.cms),t)}},S=()=>{!e||!window.location.href.includes(e==null?void 0:e.urlAdmin)||(w=!0,sessionStorage.getItem("login")&&M())},L=async()=>{if(d=await g(),!d)return;const t=new URL(window.location.href).hostname;e=d.projects.find(n=>n.url?n.subdomain?t.includes(n.url):t===n.url:!1)||null,e&&(S(),E())},E=async()=>{const t=document.createElement("link");t.href=chrome.runtime.getURL("widget.css"),t.rel="stylesheet",document.head.appendChild(t),s=document.createElement("div"),s.className="sup-5th-widget";const n=document.createElement("button");if(n.className="sup-5th-btn sup-5th-menu",n.title="Нажмите для открытия / Зажмите для переноса",n.style=`background-image: url(${f((e==null?void 0:e.cms)||"cms")})`,n.addEventListener("click",()=>{if(!s)return;window.getComputedStyle(s).getPropertyValue("flex-direction")==="row"&&!(s!=null&&s.classList.contains("open"))?s.style.setProperty("--translate",`translate(min(max(calc(var(--x) + ${(s.childElementCount-1)*68}px), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh))`):s.style.setProperty("--translate","translate(min(max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh))"),s==null||s.classList.toggle("open")}),s.appendChild(n),e&&e.urlAdmin){const o=document.createElement("button");o.className="sup-5th-btn",o.title=w?"Перейти на сайт":"Перейти в админку",o.innerHTML=w?`
+const cmsList = {
+  UMI: "admin/content/sitetree/",
+  EzPro: "ezpro/",
+  Bitrix: "bitrix/admin/#authorize",
+  ABO: "login.php",
+  MODX: "manager/",
+  AdminLTE: "admin/",
+  Joomla: "administrator/"
+};
+const getUrlAdminLogin = (urlAdmin, cms) => {
+  switch (cms) {
+    case "Нет":
+    case "":
+      return "#";
+    case "Своя":
+    case "WordPress":
+      return urlAdmin.includes("http:") ? `${urlAdmin}` : `https://${urlAdmin}`;
+    case "Tilda":
+      return "https://tilda.ru/login/";
+    default:
+      return `/${cmsList[cms]}`;
+  }
+};
+const getVal = (num, attr = {}) => {
+  if (!num) return 0;
+  let res = Math.trunc(num);
+  if (attr.min !== void 0) res = Math.max(res, attr.min);
+  if (attr.max !== void 0) res = Math.min(res, attr.max);
+  return res;
+};
+let storage = null, currentProject = null, floatingWidget = null, isAdminPage = false;
+const STORAGE_NAME = "projectsState";
+const getProjectImg = (name) => {
+  let nameFile = name === "Своя" ? "cms" : name === "Нет" ? "hosting" : name.toLowerCase();
+  return chrome.runtime.getURL(`/assets/icons/${nameFile}.svg`);
+};
+const getFromStorage = async () => {
+  try {
+    const result = await chrome.storage.local.get([STORAGE_NAME]);
+    if (result[STORAGE_NAME] !== void 0)
+      return JSON.parse(result[STORAGE_NAME]);
+    return null;
+  } catch (error) {
+    console.error("Ошибка при получении из хранилища:", error);
+    return null;
+  }
+};
+const setToStorage = async (data) => {
+  try {
+    await chrome.storage.local.set({ [STORAGE_NAME]: JSON.stringify(data) });
+  } catch (error) {
+    console.error("Ошибка при сохранении в хранилище:", error);
+  }
+};
+const saveWidgetPosition = async () => {
+  var _a;
+  storage = await getFromStorage();
+  if (!storage) return;
+  let widgetPosition = void 0;
+  if ((currentProject == null ? void 0 : currentProject.widgetPosition) && (currentProject.widgetPosition.x || ((_a = currentProject.widgetPosition) == null ? void 0 : _a.y)))
+    widgetPosition = currentProject.widgetPosition;
+  storage.projects = storage.projects.map(
+    (item) => item.url === (currentProject == null ? void 0 : currentProject.url) ? { ...item, widgetPosition } : item
+  );
+  await setToStorage(storage);
+};
+const loginAdminPanelSecond = async () => {
+  if (!(currentProject == null ? void 0 : currentProject.cms)) return;
+  const loginBitrix = async () => {
+    if (!document.querySelector("[name=USER_LOGIN]")) return;
+    const inputLogin = document.querySelector("[name=USER_LOGIN]"), inputPassword = document.querySelector("[name=USER_PASSWORD]"), inputRemember = document.querySelector("[name=USER_REMEMBER]"), inputLoginBtn = document.querySelector("[name=Login]");
+    inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
+    inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
+    inputRemember.checked = true;
+    inputLoginBtn.click();
+  };
+  const loginModx = async () => {
+    if (!document.querySelector("[name=username]")) return;
+    const inputLogin = document.querySelector("[name=username]"), inputPassword = document.querySelector("[name=password]"), inputRemember = document.querySelector("[name=rememberme]"), inputLoginBtn = document.querySelector("[name=login]");
+    inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
+    inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
+    inputRemember.checked = true;
+    inputLoginBtn.click();
+  };
+  switch (currentProject == null ? void 0 : currentProject.cms) {
+    case "Bitrix":
+      await loginBitrix();
+      break;
+    case "MODX":
+      await loginModx();
+      break;
+  }
+  sessionStorage.removeItem("login");
+};
+const loginAdminPanel = async (target) => {
+  if (!(currentProject == null ? void 0 : currentProject.cms)) return window.open(currentProject == null ? void 0 : currentProject.urlAdmin, target);
+  const loginUmi = async () => {
+    const urlAdmin = "/admin/content/sitetree/";
+    const urlLoginAdmin = "/admin/users/login_do/";
+    try {
+      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: "error" });
+      return window.open(urlAdmin, target);
+    } catch (er) {
+    }
+    const formData = new FormData();
+    Object.entries({
+      login: currentProject == null ? void 0 : currentProject.login,
+      password: currentProject == null ? void 0 : currentProject.password,
+      ilang: "ru",
+      "save-auth-token": 1
+    }).forEach(([key, value]) => formData.append(key, (value == null ? void 0 : value.toString()) || ""));
+    await fetch(urlLoginAdmin, {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+    window.open(urlAdmin, target);
+  };
+  const loginBitrix = async () => {
+    const urlLoginAdmin = "/bitrix/admin/#authorize";
+    sessionStorage.setItem("login", "1");
+    window.open(urlLoginAdmin, target);
+  };
+  const loginModx = async () => {
+    const urlLoginAdmin = "/manager/";
+    sessionStorage.setItem("login", "1");
+    window.open(urlLoginAdmin, target);
+  };
+  const loginAbo = async () => {
+    const urlAdmin = "/admin.php";
+    const urlLoginAdmin = "/login.php";
+    try {
+      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: "error" });
+      return window.open(urlAdmin, target);
+    } catch (er) {
+    }
+    const formData = new FormData();
+    Object.entries({
+      email: currentProject == null ? void 0 : currentProject.login,
+      password: currentProject == null ? void 0 : currentProject.password,
+      validate: true
+    }).forEach(([key, value]) => formData.append(key, (value == null ? void 0 : value.toString()) || ""));
+    await fetch(urlLoginAdmin, {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+    window.open(urlAdmin, target);
+  };
+  switch (currentProject == null ? void 0 : currentProject.cms) {
+    case "UMI":
+      return await loginUmi();
+    case "Bitrix":
+      return await loginBitrix();
+    case "MODX":
+      return await loginModx();
+    case "ABO":
+      return await loginAbo();
+    default:
+      window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms), target);
+  }
+};
+const checkAdmin = () => {
+  if (!currentProject || !window.location.href.includes(currentProject == null ? void 0 : currentProject.urlAdmin)) return;
+  isAdminPage = true;
+  if (sessionStorage.getItem("login")) loginAdminPanelSecond();
+};
+const checkCurrentProject = async () => {
+  storage = await getFromStorage();
+  if (!storage) return;
+  const currentDomain = new URL(window.location.href).hostname;
+  currentProject = storage.projects.find(
+    (project) => project.url ? project.subdomain ? currentDomain.includes(project.url) : currentDomain === project.url.replace("http:", "") : false
+  ) || null;
+  if (currentProject) {
+    checkAdmin();
+    createFloatingWidget();
+  }
+};
+const createFloatingWidget = async () => {
+  const styleSheet = document.createElement("link");
+  styleSheet.href = chrome.runtime.getURL("widget.css");
+  styleSheet.rel = "stylesheet";
+  document.head.appendChild(styleSheet);
+  floatingWidget = document.createElement("div");
+  floatingWidget.className = "sup-5th-widget";
+  const btnMenu = document.createElement("button");
+  btnMenu.className = "sup-5th-btn sup-5th-menu";
+  btnMenu.title = "Нажмите для открытия / Зажмите для переноса";
+  btnMenu.style = `background-image: url(${getProjectImg(
+    (currentProject == null ? void 0 : currentProject.cms) || "cms"
+  )})`;
+  btnMenu.addEventListener("click", () => {
+    if (!floatingWidget) return;
+    const style = window.getComputedStyle(floatingWidget);
+    if (style.getPropertyValue("flex-direction") === "row" && !(floatingWidget == null ? void 0 : floatingWidget.classList.contains("open"))) {
+      floatingWidget.style.setProperty(
+        "--translate",
+        `translate(min(max(calc(var(--x) + ${(floatingWidget.childElementCount - 1) * 68}px), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh))`
+      );
+    } else {
+      floatingWidget.style.setProperty(
+        "--translate",
+        `translate(min(max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh))`
+      );
+    }
+    floatingWidget == null ? void 0 : floatingWidget.classList.toggle("open");
+  });
+  floatingWidget.appendChild(btnMenu);
+  if (currentProject && currentProject.urlAdmin) {
+    const btnAdm = document.createElement("button");
+    btnAdm.className = "sup-5th-btn";
+    btnAdm.title = isAdminPage ? "Перейти на сайт" : "Перейти в админку";
+    btnAdm.innerHTML = isAdminPage ? `
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M16 29.3333C23.3637 29.3333 29.3333 23.3637 29.3333 16C29.3333 8.63619 23.3637 2.66666 16 2.66666C8.63616 2.66666 2.66663 8.63619 2.66663 16C2.66663 23.3637 8.63616 29.3333 16 29.3333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       <g opacity="0.4">
@@ -8,7 +221,7 @@ const k={UMI:"admin/content/sitetree/",EzPro:"ezpro/",Bitrix:"bitrix/admin/#auth
       <path d="M4 12.0001C11.7867 9.40014 20.2133 9.40014 28 12.0001" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
     </svg>
-    `:`
+    ` : `
     <svg xmlns="http://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M29.333 16C29.333 8.64 23.36 2.667 16 2.667S2.667 8.64 2.667 16 8.64 29.333 16 29.333"/>
       <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" opacity=".4">
@@ -18,14 +231,105 @@ const k={UMI:"admin/content/sitetree/",EzPro:"ezpro/",Bitrix:"bitrix/admin/#auth
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="m25.615 20.987-4.72 4.72c-.187.186-.36.533-.4.786l-.254 1.8c-.093.654.36 1.107 1.014 1.014l1.8-.254c.253-.04.613-.213.786-.4l4.72-4.72c.814-.813 1.2-1.76 0-2.96-1.186-1.186-2.133-.8-2.946.014Z"/>
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M24.932 21.667c.4 1.44 1.52 2.56 2.96 2.96"/>
     </svg>
-    `,o.addEventListener("mousedown",r=>{if(!e||!(r.buttons===1||r.buttons===4))return;const l=r.buttons===1?"_self":"_blank";w?window.open("/",l):b(l)}),s.appendChild(o)}if(e&&e.manual){const o=document.createElement("a");o.target="_blank",o.className="sup-5th-btn",o.title="Инструкция",o.href="https://"+e.manual,o.innerHTML=`
+    `;
+    btnAdm.addEventListener("mousedown", (e) => {
+      if (!currentProject || !(e.buttons === 1 || e.buttons === 4)) return;
+      const target = e.buttons === 1 ? "_self" : "_blank";
+      isAdminPage ? window.open("/", target) : loginAdminPanel(target);
+    });
+    floatingWidget.appendChild(btnAdm);
+  }
+  if (currentProject && currentProject.manual) {
+    const btnManual = document.createElement("a");
+    btnManual.target = "_blank";
+    btnManual.className = "sup-5th-btn";
+    btnManual.title = "Инструкция";
+    btnManual.href = "https://" + currentProject.manual;
+    btnManual.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M29.333 22.32V6.227c0-1.6-1.306-2.787-2.893-2.653h-.08c-2.8.24-7.053 1.666-9.427 3.16l-.226.146c-.387.24-1.027.24-1.414 0l-.333-.2C12.587 5.2 8.347 3.787 5.547 3.56c-1.587-.133-2.88 1.067-2.88 2.654V22.32c0 1.28 1.04 2.48 2.32 2.64l.386.054c2.894.386 7.36 1.853 9.92 3.253l.054.027c.36.2.933.2 1.28 0 2.56-1.414 7.04-2.894 9.946-3.28l.44-.054c1.28-.16 2.32-1.36 2.32-2.64Z"/>
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7.32v20m-5.667-16h-3m4 4h-4" opacity=".4"/>
     </svg>
-    `,s.appendChild(o)}if(e&&e.addDocument){const o=document.createElement("a");o.target="_blank",o.className="sup-5th-btn",o.title="Доп документ",o.href="https://"+e.addDocument,o.innerHTML=`
+    `;
+    floatingWidget.appendChild(btnManual);
+  }
+  if (currentProject && currentProject.addDocument) {
+    const btnAddDocument = document.createElement("a");
+    btnAddDocument.target = "_blank";
+    btnAddDocument.className = "sup-5th-btn";
+    btnAddDocument.title = "Доп документ";
+    btnAddDocument.href = "https://" + currentProject.addDocument;
+    btnAddDocument.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M28 9.333v13.334c0 4-2 6.666-6.667 6.666H10.667C6 29.333 4 26.667 4 22.667V9.333c0-4 2-6.666 6.667-6.666h10.666C26 2.667 28 5.333 28 9.333Z"/>
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M19.333 6v2.667c0 1.466 1.2 2.666 2.667 2.666h2.667m-14 6H16m-5.333 5.334h10.666" opacity=".4"/>
     </svg>
-    `,s.appendChild(o)}const i=(e==null?void 0:e.widgetPosition)||{x:0,y:0};s.style.setProperty("--x",`${i.x}dvw`),s.style.setProperty("--y",`${i.y}dvh`),s.style.setProperty("flex-direction",`${i.x>-50?"row-reverse":"row"}`),A(s),document.body.appendChild(s),s.style.setProperty("--width-full",`${s.childElementCount*68}px`)},A=t=>{let n=!1,i=!1,o=0,r=0,l=0,c=0;const u=()=>{const a=window.getComputedStyle(t);return{x:parseInt(a.getPropertyValue("--x")),y:parseInt(a.getPropertyValue("--y"))}};t.addEventListener("mousedown",a=>{if(a.buttons!==1)return;i=!0,o=a.pageX,r=a.pageY;const{x:m,y}=u();l=a.pageX-m/100*window.innerWidth,c=a.pageY-y/100*window.innerHeight}),document.body.addEventListener("mouseup",async()=>{n=!1,i=!1,t.classList.remove("dragging"),e&&(e.widgetPosition=u(),await C())}),document.body.addEventListener("mousemove",a=>{if(i&&(Math.abs(o-a.pageX)>2||Math.abs(r-a.pageY)>2)&&(i=!1,n=!0,t.classList.add("dragging")),!n)return;const m=p((l-a.pageX)*-100/window.innerWidth,{min:-99,max:0});t.style.setProperty("--x",`${m}dvw`),t.style.setProperty("--y",`${p((c-a.pageY)*-100/window.innerHeight,{min:-99,max:0})}dvh`),t.style.setProperty("flex-direction",`${m>-50?"row-reverse":"row"}`)})};L();
+    `;
+    floatingWidget.appendChild(btnAddDocument);
+  }
+  const position = (currentProject == null ? void 0 : currentProject.widgetPosition) || { x: 0, y: 0 };
+  floatingWidget.style.setProperty("--x", `${position.x}dvw`);
+  floatingWidget.style.setProperty("--y", `${position.y}dvh`);
+  floatingWidget.style.setProperty(
+    "flex-direction",
+    `${position.x > -50 ? "row-reverse" : "row"}`
+  );
+  makeDraggable(floatingWidget);
+  document.body.appendChild(floatingWidget);
+  floatingWidget.style.setProperty(
+    "--width-full",
+    `${floatingWidget.childElementCount * 68}px`
+  );
+};
+const makeDraggable = (element) => {
+  let dragging = false, isClick = false, clictX = 0, clickY = 0, startX = 0, startY = 0;
+  const getPropertyXandY = () => {
+    const style = window.getComputedStyle(element);
+    return {
+      x: parseInt(style.getPropertyValue("--x")),
+      y: parseInt(style.getPropertyValue("--y"))
+    };
+  };
+  element.addEventListener("mousedown", (e) => {
+    if (e.buttons !== 1) return;
+    isClick = true;
+    clictX = e.pageX;
+    clickY = e.pageY;
+    const { x, y } = getPropertyXandY();
+    startX = e.pageX - x / 100 * window.innerWidth;
+    startY = e.pageY - y / 100 * window.innerHeight;
+  });
+  document.body.addEventListener("mouseup", async () => {
+    dragging = false;
+    isClick = false;
+    element.classList.remove("dragging");
+    if (!currentProject) return;
+    currentProject.widgetPosition = getPropertyXandY();
+    await saveWidgetPosition();
+  });
+  document.body.addEventListener("mousemove", (e) => {
+    if (isClick && (Math.abs(clictX - e.pageX) > 2 || Math.abs(clickY - e.pageY) > 2)) {
+      isClick = false;
+      dragging = true;
+      element.classList.add("dragging");
+    }
+    if (!dragging) return;
+    const posX = getVal((startX - e.pageX) * -100 / window.innerWidth, {
+      min: -99,
+      max: 0
+    });
+    element.style.setProperty("--x", `${posX}dvw`);
+    element.style.setProperty(
+      "--y",
+      `${getVal((startY - e.pageY) * -100 / window.innerHeight, {
+        min: -99,
+        max: 0
+      })}dvh`
+    );
+    element.style.setProperty(
+      "flex-direction",
+      `${posX > -50 ? "row-reverse" : "row"}`
+    );
+  });
+};
+checkCurrentProject();

@@ -8,10 +8,11 @@
         <img v-if="project.cms" :src="getIcon(project.cms === 'Своя' ? 'cms' : project.cms)"/>
         <img v-else :src="getIcon('hosting')"/>
       </a>
-      <h1 class="current-content__name">{{ project.name }}</h1>
+      <a class="current-content__name" :href="project.url.includes('http:') ?  project.url.replace('http:', 'http://') : 'https://'  + project.url" target="_blank">
+        <h1 >{{ project.name }} ({{ project.url.includes('http:') ?  project.url.replace('http:', '') : project.url }})</h1>
+      </a>
     </header>
 
-    <Button size="l" :href="`https://${project.url}`"  target="_blank">{{ project.url }}</Button>
     <Button v-if="project.git" size="l" :href="`https://${project.git}`"  target="_blank"><img :src="getIcon('gitlab')"/></Button>
     <Button v-if="project.figma" size="l" :href="`https://${project.figma}`"  target="_blank"><img :src="getIcon('figma')"/></Button>
     <Button v-if="project.manual" size="l" :href="`https://${project.manual}`"  target="_blank">Инструкция <BookIcon/></Button>
@@ -90,7 +91,7 @@ defineProps<{
 }
 
 .current-content__name {
-  font-size: 28px;
+  color: currentColor;
+  text-decoration: none;
 }
-
 </style>

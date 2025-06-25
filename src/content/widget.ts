@@ -17,7 +17,7 @@ const getUrlAdminLogin = (urlAdmin: string, cms: CMSName) => {
       return "#";
     case "Своя":
     case "WordPress":
-      return `https://${urlAdmin}`;
+      return urlAdmin.includes('http:') ? `${urlAdmin}` : `https://${urlAdmin}`
     case "Tilda":
       return "https://tilda.ru/login/";
     default:
@@ -45,7 +45,7 @@ const STORAGE_NAME = "projectsState";
 
 const getProjectImg = (name: string) => {
   let nameFile =
-    name === "Своя" ? "cms" : name === "Нет" ? "hosting" : name.toLowerCase();
+    name === "Своя" ? "cms" : (name === "Нет" ? "hosting" : name.toLowerCase());
   return chrome.runtime.getURL(`/assets/icons/${nameFile}.svg`);
 };
 
@@ -164,6 +164,31 @@ const loginAdminPanel = async (target: string) => {
     window.open(urlLoginAdmin, target);
   }
 
+  const loginAbo = async () => { 
+    const urlAdmin = '/admin.php'
+    const urlLoginAdmin = '/login.php'
+
+    try {
+      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: 'error' })
+      return window.open(urlAdmin, target);
+    } catch (er) { }
+
+    const formData = new FormData();
+    Object.entries({
+      email: currentProject?.login,
+      password: currentProject?.password,
+      validate: true
+    }).forEach(([key, value]) => formData.append(key, value?.toString() || ""));
+
+    await fetch(urlLoginAdmin, {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    })
+    
+    window.open(urlAdmin, target);
+  }
+
   switch (currentProject?.cms) {
     case "UMI":
       return await loginUmi();
@@ -171,6 +196,8 @@ const loginAdminPanel = async (target: string) => {
       return await loginBitrix();
     case "MODX":
       return await loginModx();
+    case "ABO":
+      return await loginAbo();
     default: window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms), target);
   }
 };
@@ -190,7 +217,7 @@ const checkCurrentProject = async (): Promise<void> => {
       project.url
         ? project.subdomain
           ? currentDomain.includes(project.url)
-          : currentDomain === project.url
+          : currentDomain === project.url.replace('http:', '')
         : false
     ) || null;
   if (currentProject) {

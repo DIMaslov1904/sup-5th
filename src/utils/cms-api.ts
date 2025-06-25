@@ -15,10 +15,10 @@ export const getUrlAdminLogin = (url: string, urlAdmin: string, cms: CMSName) =>
       return '#'
     case 'Своя':
     case 'WordPress':
-      return `https://${urlAdmin}`
+      return urlAdmin.includes('http:') ? `${urlAdmin}` : `https://${urlAdmin}`
     case 'Tilda':
       return "https://tilda.ru/login/"
     default:
-      return `https://${url}/${cmsList[cms]}`
+      return url.includes('http:') ? `http://${url.replace('http:', '')}/${cmsList[cms]}` : `https://${url}/${cmsList[cms]}`
   }
 }
