@@ -13,13 +13,6 @@
         <GlobalEditIcon/>
       </Button>
     </header>
-    <footer class="project-item__footer">
-      <Button size="l" v-if="project.manual" :href="'https://' + project.manual" class="project-item__action project-item__action_manual" target="_blank" title="Инструкция">
-        Инструкция
-        <BookIcon/>
-      </Button>
-      <CopyAccess v-if="project.login" :project class="project-item__action project-item__action_access"/>
-    </footer>
   </li>
 </template>
 <script setup lang="ts">
@@ -27,8 +20,6 @@ import { getUrlAdminLogin } from '@/utils/cms-api';
 import {getProjectImg} from '@/utils/getFiles';
 import Button from '@/components/ui/Button.vue';
 import GlobalEditIcon from '@/components/icons/GlobalEditIcon.vue';
-import BookIcon from '@/components/icons/BookIcon.vue';
-import CopyAccess from '@/components/CopyAccess.vue'; 
 
 defineProps<{
   project: Project
@@ -48,7 +39,7 @@ defineEmits < {
   border-radius: 8px;
   border: 1px solid var(--color-secondaty-hover);
   box-shadow: 0 0 10px rgba(0 0 0 / .3);
-  transition-property: height, box-shadow;
+  transition-property: box-shadow;
   transition-duration: .2s;
   overflow: hidden;
   height: 76px;
@@ -65,12 +56,6 @@ defineEmits < {
 
   &:hover {
     box-shadow: 0 0 10px rgba(255 255 255 / .3);
-    height: 121px;
-  }
-  &:not(:hover) {
-    .project-item__action {
-      opacity: 0;
-    }
   }
 }
 
@@ -89,14 +74,6 @@ defineEmits < {
   margin-bottom: 10px;
 }
 
-.project-item__footer {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
 .project-item__title {
   font-size: 18px;
   line-height: 18px;
@@ -107,17 +84,4 @@ defineEmits < {
   line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-
-.project-item__action {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  justify-content: space-between;
-  border: 1px solid rgba(255 255 255 / .1);
-  transition: background-color 0.2s ease, opacity 0.2s ease;
-
-  &_access {
-    grid-column: 2;
-  }
-}
-
 </style>
