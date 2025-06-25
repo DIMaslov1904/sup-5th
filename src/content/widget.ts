@@ -86,13 +86,26 @@ const createFloatingWidget = async(): Promise<void> => {
 
   // Сам виджет
   floatingWidget = document.createElement('div')
-  floatingWidget.className = 'sup-5th-widget no_anim'
+  floatingWidget.className = 'sup-5th-widget'
 
   // Кнопка открытия закрытия виджета с лого cms
   const btnMenu = document.createElement('button')
   btnMenu.className = 'sup-5th-btn sup-5th-menu'
+  btnMenu.title = 'Нажмите для открытия / Зажмите для переноса'
   btnMenu.style = `background-image: url(${getProjectImg(currentProject?.cms || 'cms')})`
-  btnMenu.addEventListener('click', () => floatingWidget?.classList.toggle('open'))
+  btnMenu.addEventListener('click', () => {
+    if (!floatingWidget) return
+    const style = window.getComputedStyle(floatingWidget)
+    if (style.getPropertyValue('flex-direction') === 'row' && !floatingWidget?.classList.contains('open')) {
+      floatingWidget.style.setProperty("--translate", `translate(min(max(calc(var(--x) + ${(floatingWidget.childElementCount - 1) * 68}px), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh))`)
+    } else { 
+      floatingWidget.style.setProperty("--translate", `translate(min(max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh))`)
+    }
+
+
+
+    floatingWidget?.classList.toggle('open')
+  })
   floatingWidget.appendChild(btnMenu)
 
   // Кнопка админки
@@ -102,7 +115,7 @@ const createFloatingWidget = async(): Promise<void> => {
     btnAdm.title = 'Перейти в админку'
     btnAdm.href = getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms)
     btnAdm.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M29.333 16C29.333 8.64 23.36 2.667 16 2.667S2.667 8.64 2.667 16 8.64 29.333 16 29.333"/>
       <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" opacity=".4">
         <path d="M10.666 4H12a37.899 37.899 0 0 0 0 24h-1.333M20 4a38.074 38.074 0 0 1 1.947 12"/>
@@ -123,7 +136,7 @@ const createFloatingWidget = async(): Promise<void> => {
     btnManual.title = 'Инструкция'
     btnManual.href = 'https://'+currentProject.manual
     btnManual.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M29.333 22.32V6.227c0-1.6-1.306-2.787-2.893-2.653h-.08c-2.8.24-7.053 1.666-9.427 3.16l-.226.146c-.387.24-1.027.24-1.414 0l-.333-.2C12.587 5.2 8.347 3.787 5.547 3.56c-1.587-.133-2.88 1.067-2.88 2.654V22.32c0 1.28 1.04 2.48 2.32 2.64l.386.054c2.894.386 7.36 1.853 9.92 3.253l.054.027c.36.2.933.2 1.28 0 2.56-1.414 7.04-2.894 9.946-3.28l.44-.054c1.28-.16 2.32-1.36 2.32-2.64Z"/>
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7.32v20m-5.667-16h-3m4 4h-4" opacity=".4"/>
     </svg>
@@ -139,7 +152,7 @@ const createFloatingWidget = async(): Promise<void> => {
     btnAddDocument.title = 'Доп документ'
     btnAddDocument.href = 'https://'+currentProject.addDocument
     btnAddDocument.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M28 9.333v13.334c0 4-2 6.666-6.667 6.666H10.667C6 29.333 4 26.667 4 22.667V9.333c0-4 2-6.666 6.667-6.666h10.666C26 2.667 28 5.333 28 9.333Z"/>
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5" d="M19.333 6v2.667c0 1.466 1.2 2.666 2.667 2.666h2.667m-14 6H16m-5.333 5.334h10.666" opacity=".4"/>
     </svg>
@@ -179,10 +192,14 @@ const makeDraggable = (element: HTMLElement): void => {
     isClick = true
     clictX = e.pageX
     clickY = e.pageY
+      const { x, y } = getPropertyXandY()
+      startX = e.pageX - (x / 100 * window.innerWidth)
+      startY = e.pageY - (y / 100 * window.innerHeight) 
   })
 
   document.body.addEventListener("mouseup", async () => {
     dragging = false
+    isClick = false
     element.classList.remove('dragging')
     if (!currentProject) return
     currentProject.widgetPosition = getPropertyXandY()
@@ -194,14 +211,13 @@ const makeDraggable = (element: HTMLElement): void => {
       isClick = false
       dragging = true
       element.classList.add('dragging')
-      const { x, y } = getPropertyXandY()
-      startX = e.pageX - (x / 100 * window.innerWidth)
-      startY = e.pageY - (y / 100 * window.innerHeight) 
     }
 
     if (!dragging) return
-    element.style.setProperty("--x", `${getVal(((startX - e.pageX) * -100 / window.innerWidth), {min: -99, max: 0})}dvw`)
-    element.style.setProperty("--y", `${getVal(((startY - e.pageY) * -100 / window.innerHeight), {min: -99, max: 0})}dvh`)
+    const posX = getVal(((startX - e.pageX) * -100 / window.innerWidth), {min: -99, max: 0})
+    element.style.setProperty("--x", `${posX}dvw`)
+    element.style.setProperty("--y", `${getVal(((startY - e.pageY) * -100 / window.innerHeight), { min: -99, max: 0 })}dvh`)
+    element.style.setProperty("flex-direction", `${posX > -50 ? 'row-reverse' : 'row'}`)
   })
 }
 
