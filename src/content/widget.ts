@@ -1,4 +1,4 @@
-import "./widget.css";
+import "./widget.scss";
 
 const cmsList: { [key: string]: string } = {
   UMI: "admin/content/sitetree/",

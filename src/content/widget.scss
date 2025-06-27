@@ -19,27 +19,35 @@
   display: inline-flex;
   width: var(--width);
   overflow: hidden;
-}
 
-.sup-5th-widge:hover {
-  transition: width .3s, transform .3s;
-}
+  &:hover {
+    transition: width .3s, transform .3s;
+  }
 
-.sup-5th-widget.open {
-  --width: var(--width-full)!important;
-}
+  &.open {
+    --width: var(--width-full)!important;
+  }
 
-.sup-5th-widget .sup-5th-menu:hover {
-  transform: scale(1.05);
-}
+  .sup-5th-menu:hover {
+    transform: scale(1.05);
+  }
 
-.sup-5th-widget:not(.dragging) .sup-5th-btn:not(.sup-5th-menu):hover {
-  background-color: #ef3f2c;
-  color: #fff;
-}
+  &:not(.dragging) .sup-5th-btn:not(.sup-5th-menu):hover {
+    background-color: #ef3f2c;
+    color: #fff;
+  }
 
-.sup-5th-widget.dragging .sup-5th-btn {
-  pointer-events: none;
+  &.dragging {
+    transition: none;
+    opacity: 0.8;
+    cursor: grabbing;
+    transform: var(--translate) scale(1.05);
+    box-shadow: 0 0 15px 2px rgb(0 0 0 / .2);
+
+     .sup-5th-btn {
+      pointer-events: none;
+    }
+  }
 }
 
 .sup-5th-btn {
@@ -59,22 +67,14 @@
   transition-property: transform, background-color, color;
   transition-duration: .3s;
   background-color: transparent;
-}
 
-.sup-5th-btn svg {
-  width: var(--img-size);
+  svg {
+    width: var(--img-size);
+  }
 }
 
 .sup-5th-menu {
   background-repeat: no-repeat;
   background-position: center;
   background-size: var(--img-size);
-}
-
-.sup-5th-widget.dragging {
-  transition: none;
-  opacity: 0.8;
-  cursor: grabbing;
-  transform: var(--translate) scale(1.05);
-  box-shadow: 0 0 15px 2px rgb(0 0 0 / .2);
 }

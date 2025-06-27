@@ -1,4 +1,4 @@
-import './support.css'
+import './support.scss'
 
 (function () {
   function createModal(name, fnOpen, fnClose) {
