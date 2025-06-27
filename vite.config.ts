@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
         input: {
           popup: resolve(__dirname, 'src/popup/index.html'),
           widget: resolve(__dirname, 'src/content/widget.ts'),
-          support: resolve(__dirname, 'src/content/support.js'),
+          support: resolve(__dirname, 'src/content/support.ts'),
           background: resolve(__dirname, 'src/background/background.ts'),
         },
         output: {
@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: 'dist',
       emptyOutDir: false,
-      minify: true,
+      minify: false,
       sourcemap: false
     },
     resolve: {
