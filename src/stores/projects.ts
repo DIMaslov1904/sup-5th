@@ -54,6 +54,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
   };
 
   const add = async (data: Project) => {
+    if (!data.url) return
     state.value.projects = [
       ...state.value.projects,
       { ...data, isImg: await checkImg(data.url) },
