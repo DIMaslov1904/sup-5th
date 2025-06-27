@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <SelectProject v-if="selectProjectState.state?.url" :project="selectProjectState.state" @backward="selectProjectState.removeProject" />
+    <SelectProject v-if="'url' in selectProjectState.state" :project="selectProjectState.state" @backward="backward" />
   </transition>
 
   <div v-if="projectsStore.state.projects.length > 0">
@@ -10,13 +10,13 @@
       <Button @click="projectsStore.updateAccess">Обновить доступы</Button>
     </header>
     <ul class="project-list" >
-      <ProjectItem v-for="project in ( isAccess || search ? projectsStore.state.projects.filter(filterProjects) : projectsStore.state.projects)" :key="project.url" :project="project" @setSite="selectProjectState.setProject(project)" />
+      <ProjectItem v-for="project in getListSetFilters()" :key="project.url" :project="project" @setSite="setSite(project)" />
     </ul>  </div>
   <EmptyProjects v-else />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import switcher from '@/utils/switcher'
 import { useProjectsStore, useSelectProjectStore } from '@/stores'
 import ProjectItem from '@/components/ProjectItem.vue'
@@ -31,6 +31,28 @@ const isAccess = ref(false)
 const search = ref('')
 const searchRU = ref('')
 const searchEN = ref('')
+
+const emits = defineEmits< {
+  setIsFixHeight: [boolean]
+}>()
+
+onUnmounted(() => { emits('setIsFixHeight', true) })
+
+const backward = () => { 
+  emits('setIsFixHeight', false)
+  selectProjectState.removeProject()
+}
+
+const setSite = (project: Project) => {
+  emits('setIsFixHeight', true)
+  selectProjectState.setProject(project)
+}
+
+const getListSetFilters = () => { 
+  const res = (isAccess || search ? projectsStore.state.projects.filter(filterProjects) : projectsStore.state.projects)
+  if (!('url' in selectProjectState.state)) emits('setIsFixHeight', res.length <= 3)
+  return res
+}
 
 const selectProjectState = useSelectProjectStore()
 

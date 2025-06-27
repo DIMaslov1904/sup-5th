@@ -4,7 +4,7 @@
       <h2>Приветсвие</h2>
       <div class="welcome-input-wrap">
         <Input class="welcome-input" v-model="apiAccessUrl" placeholder="Url до api с личными доступами" style="padding-right: 140px;" />
-        <Button @click="layout = 'instruction'">Как получить url?</Button>
+        <Button @click="setLayout('instruction')">Как получить url?</Button>
       </div>
 
       <div v-if="isLoadingProojectsErr && !projectsStore.state.isLoading && projectsStore.state.projects.length === 0" class="welcome-input-wrap">
@@ -19,7 +19,7 @@
     <template v-else>
       <Instruction />
       <div class="welcome-return-wrap">
-        <Button class="welcome-return" @click="layout = 'welcome'">Вернуться</Button>
+        <Button class="welcome-return" @click="setLayout('welcome')">Вернуться</Button>
       </div>
     </template>
   </div>
@@ -38,6 +38,15 @@ const apiAccessUrl = ref(store.state.apiAccessUrl)
 
 const layout = ref('welcome')
 const isLoadingProojectsErr = ref('')
+
+const emits = defineEmits< {
+  setIsFixHeight: [boolean]
+}>()
+
+const setLayout = (name: string) => { 
+  emits('setIsFixHeight', name === 'welcome')
+  layout.value = name
+}
 
 const apiUrl = computed({
   get: () =>  store.state.apiUrl,

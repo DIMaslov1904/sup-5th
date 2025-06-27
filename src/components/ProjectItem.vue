@@ -5,11 +5,11 @@
     <header class="project-item__header">
       <h2 class="project-item__title">{{ project.name }}</h2>
       
-      <Button size="l" :href="project.url.includes('http:') ?  project.url.replace('http:', 'http://') : 'https://'  + project.url" target="_blank">
-        {{ project.url.includes('http:') ?  project.url.replace('http:', '') : project.url }}
+      <Button size="l" :href="'https://' + project.url" target="_blank" @click.stop>
+        {{ project.url }}
       </Button>
 
-      <Button size="l" :href="getUrlAdminLogin(project.url, project.urlAdmin, project.cms)" target="_blank" title="Админ. раздел">
+      <Button size="l" :href="getUrlAdminLogin(project.url, project.urlAdmin, project.cms)" target="_blank" title="Админ. раздел" @click.stop>
         <GlobalEditIcon/>
       </Button>
     </header>
@@ -24,7 +24,6 @@ import GlobalEditIcon from '@/components/icons/GlobalEditIcon.vue';
 defineProps<{
   project: Project
 }>()
-
 defineEmits < {
   setSite: []
 }>()

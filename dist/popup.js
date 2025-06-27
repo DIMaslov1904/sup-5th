@@ -7012,6 +7012,31 @@ const vModelText = {
     el.value = newValue;
   }
 };
+const systemModifiers = ["ctrl", "shift", "alt", "meta"];
+const modifierGuards = {
+  stop: (e) => e.stopPropagation(),
+  prevent: (e) => e.preventDefault(),
+  self: (e) => e.target !== e.currentTarget,
+  ctrl: (e) => !e.ctrlKey,
+  shift: (e) => !e.shiftKey,
+  alt: (e) => !e.altKey,
+  meta: (e) => !e.metaKey,
+  left: (e) => "button" in e && e.button !== 0,
+  middle: (e) => "button" in e && e.button !== 1,
+  right: (e) => "button" in e && e.button !== 2,
+  exact: (e, modifiers) => systemModifiers.some((m) => e[`${m}Key`] && !modifiers.includes(m))
+};
+const withModifiers = (fn, modifiers) => {
+  const cache = fn._withMods || (fn._withMods = {});
+  const cacheKey = modifiers.join(".");
+  return cache[cacheKey] || (cache[cacheKey] = (event, ...args) => {
+    for (let i = 0; i < modifiers.length; i++) {
+      const guard = modifierGuards[modifiers[i]];
+      if (guard && guard(event, modifiers)) return;
+    }
+    return fn(event, ...args);
+  });
+};
 const rendererOptions = /* @__PURE__ */ extend({ patchProp }, nodeOps);
 let renderer;
 function ensureRenderer() {
@@ -7426,7 +7451,8 @@ const STORAGE_NAME$3 = "mainState";
 const defaultState$3 = () => ({
   page: "currentSite",
   apiUrl: URL_ALL_PROJECTS,
-  apiAccessUrl: "",
+  apiAccessUrl: "https://script.google.com/macros/s/AKfycbxhWA-PJLQT6sswIlwg_0wjXWhy9cuJeYa90yhnXaU1sHY6_Yyt4qmspU1YBzdBaU3B/exec",
+  //TODO: удалить 
   hiddenAdmButton: false
 });
 const useMainStore = /* @__PURE__ */ defineStore(STORAGE_NAME$3, () => {
@@ -7570,7 +7596,6 @@ const defaultStateOne = () => ({
   git: "",
   figma: "",
   addDocument: "",
-  isGitPull: false,
   updateAt: (/* @__PURE__ */ new Date()).getTime(),
   isImg: false
 });
@@ -7631,7 +7656,14 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$1, () => {
     noticeStore.add("success", `Найдено новых изображений: ${newImg}шт`, 10);
   };
   const cleanUrl = (url) => {
-    return url.replace("https://", "");
+    return url.replace("https://", "").replace("http://", "");
+  };
+  const getHost = (url) => {
+    try {
+      return new URL("https://" + url).host;
+    } catch (_) {
+      return url;
+    }
   };
   const update = async () => {
     const noticeStore = useNoticeStore();
@@ -7652,7 +7684,7 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$1, () => {
       for (const item of res.result) {
         const newItem = {
           name: item[0],
-          url: cleanUrl(item[1]).replaceAll("/", ""),
+          url: getHost(cleanUrl(item[1])),
           subdomain: item[2],
           urlAdmin: cleanUrl(item[4]),
           cms: item[5],
@@ -7700,7 +7732,7 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$1, () => {
     const res = await getAccess();
     for (const item of res.result) {
       const newItem = {
-        url: cleanUrl(item[1]).replaceAll("/", ""),
+        url: getHost(cleanUrl(item[1])),
         login: item[2],
         password: item[3]
       };
@@ -7753,6 +7785,7 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$1, () => {
     state,
     edit,
     update,
+    remove: remove2,
     updateIsImg,
     updateAccess,
     updateAll,
@@ -7791,7 +7824,7 @@ const _export_sfc = (sfc, props) => {
   return target;
 };
 const _sfc_main$E = {};
-const _hoisted_1$v = {
+const _hoisted_1$w = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -7799,7 +7832,7 @@ const _hoisted_1$v = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$l(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$v, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$w, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M10.8137 15.7997C7.05372 16.0664 7.06705 21.5331 10.8137 21.7997H19.7071C20.7871 21.8131 21.8271 21.3997 22.6271 20.6797C25.2671 18.3731 23.8537 13.7464 20.3871 13.3063C19.1471 5.78635 8.28041 8.63968 10.8537 15.7997",
       stroke: "currentColor",
@@ -7828,7 +7861,7 @@ function _sfc_render$l(_ctx, _cache) {
 }
 const CloudChangeIcon = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["render", _sfc_render$l]]);
 const _sfc_main$D = {};
-const _hoisted_1$u = {
+const _hoisted_1$v = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -7836,7 +7869,7 @@ const _hoisted_1$u = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$k(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$u, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$v, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M16.0061 29.3124C23.3546 29.3124 29.3117 23.3553 29.3117 16.0068C29.3117 8.65829 23.3546 2.70117 16.0061 2.70117C8.65763 2.70117 2.7005 8.65829 2.7005 16.0068C2.7005 23.3553 8.65763 29.3124 16.0061 29.3124Z",
       stroke: "currentColor",
@@ -7864,7 +7897,7 @@ function _sfc_render$k(_ctx, _cache) {
 }
 const ConvertIcon = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["render", _sfc_render$k]]);
 const _sfc_main$C = {};
-const _hoisted_1$t = {
+const _hoisted_1$u = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -7872,7 +7905,7 @@ const _hoisted_1$t = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$j(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$t, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$u, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M12 29.3333H9.33335C4.00002 29.3333 2.66669 28 2.66669 22.6667V9.33333C2.66669 4 4.00002 2.66667 9.33335 2.66667H11.3334C13.3334 2.66667 13.7734 3.25335 14.5334 4.26668L16.5334 6.93335C17.04 7.60001 17.3334 8 18.6667 8H22.6667C28 8 29.3334 9.33333 29.3334 14.6667V17.3333",
       stroke: "currentColor",
@@ -7894,7 +7927,7 @@ function _sfc_render$j(_ctx, _cache) {
 }
 const FolderIcon = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["render", _sfc_render$j]]);
 const _sfc_main$B = {};
-const _hoisted_1$s = {
+const _hoisted_1$t = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -7902,7 +7935,7 @@ const _hoisted_1$s = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$i(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$s, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$t, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M29.3333 14.6667V22.6667C29.3333 28 28 29.3334 22.6666 29.3334H9.33329C3.99996 29.3334 2.66663 28 2.66663 22.6667V9.33335C2.66663 4.00002 3.99996 2.66669 9.33329 2.66669H11.3333C13.3333 2.66669 13.7733 3.25335 14.5333 4.26669L16.5333 6.93335C17.04 7.60002 17.3333 8.00002 18.6666 8.00002H22.6666C28 8.00002 29.3333 9.33335 29.3333 14.6667Z",
       stroke: "currentColor",
@@ -7913,7 +7946,7 @@ function _sfc_render$i(_ctx, _cache) {
 }
 const FolderIconEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["render", _sfc_render$i]]);
 const _sfc_main$A = {};
-const _hoisted_1$r = {
+const _hoisted_1$s = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -7921,7 +7954,7 @@ const _hoisted_1$r = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$h(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$r, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$s, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M17.346 3.89309L25.2127 7.38643C27.4794 8.38643 27.4794 10.0398 25.2127 11.0398L17.346 14.5331C16.4527 14.9331 14.986 14.9331 14.0927 14.5331L6.22606 11.0398C3.9594 10.0398 3.9594 8.38643 6.22606 7.38643L14.0927 3.89309C14.986 3.49309 16.4527 3.49309 17.346 3.89309Z",
       stroke: "currentColor",
@@ -7949,7 +7982,7 @@ function _sfc_render$h(_ctx, _cache) {
 }
 const LayerIcon = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["render", _sfc_render$h]]);
 const _sfc_main$z = {};
-const _hoisted_1$q = {
+const _hoisted_1$r = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -7957,7 +7990,7 @@ const _hoisted_1$q = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$g(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$q, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$r, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       opacity: "0.4",
       d: "M16.0012 17.9065C18.2986 17.9065 20.1612 16.0441 20.1612 13.7465C20.1612 11.4491 18.2986 9.58659 16.0012 9.58659C13.7036 9.58659 11.8411 11.4491 11.8411 13.7465C11.8411 16.0441 13.7036 17.9065 16.0012 17.9065Z",
@@ -7988,15 +8021,15 @@ const _sfc_main$y = /* @__PURE__ */ defineComponent({
   }
 });
 const _sfc_main$x = {};
-const _hoisted_1$p = { class: "popup-nav" };
+const _hoisted_1$q = { class: "popup-nav" };
 function _sfc_render$f(_ctx, _cache) {
-  return openBlock(), createElementBlock("nav", _hoisted_1$p, [
+  return openBlock(), createElementBlock("nav", _hoisted_1$q, [
     renderSlot(_ctx.$slots, "default")
   ]);
 }
 const PopupNav = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["render", _sfc_render$f]]);
-const _hoisted_1$o = ["title"];
-const _hoisted_2$7 = {
+const _hoisted_1$p = ["title"];
+const _hoisted_2$8 = {
   key: 0,
   class: "popup-nav__item-count"
 };
@@ -8022,15 +8055,15 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
         title: __props.title
       }, [
         renderSlot(_ctx.$slots, "default"),
-        __props.count ? (openBlock(), createElementBlock("span", _hoisted_2$7, toDisplayString(__props.count), 1)) : createCommentVNode("", true)
-      ], 10, _hoisted_1$o);
+        __props.count ? (openBlock(), createElementBlock("span", _hoisted_2$8, toDisplayString(__props.count), 1)) : createCommentVNode("", true)
+      ], 10, _hoisted_1$p);
     };
   }
 });
 const _sfc_main$v = {};
-const _hoisted_1$n = { class: "popup-container" };
+const _hoisted_1$o = { class: "popup-container" };
 function _sfc_render$e(_ctx, _cache) {
-  return openBlock(), createElementBlock("div", _hoisted_1$n, [
+  return openBlock(), createElementBlock("div", _hoisted_1$o, [
     renderSlot(_ctx.$slots, "default")
   ]);
 }
@@ -8066,14 +8099,14 @@ const getUrlAdminLogin = (url, urlAdmin, cms) => {
       return "#";
     case "Своя":
     case "WordPress":
-      return urlAdmin.includes("http:") ? `${urlAdmin}` : `https://${urlAdmin}`;
+      return "https://" + urlAdmin;
     case "Tilda":
       return "https://tilda.ru/login/";
     default:
-      return url.includes("http:") ? `http://${url.replace("http:", "")}/${cmsList[cms]}` : `https://${url}/${cmsList[cms]}`;
+      return `https://${url}/${cmsList[cms]}`;
   }
 };
-const _hoisted_1$m = ["href"];
+const _hoisted_1$n = ["href"];
 const _sfc_main$u = /* @__PURE__ */ defineComponent({
   __name: "Button",
   props: {
@@ -8088,7 +8121,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
         class: normalizeClass(["button", `button_${_ctx.size}`])
       }, [
         renderSlot(_ctx.$slots, "default")
-      ], 10, _hoisted_1$m)) : (openBlock(), createElementBlock("button", {
+      ], 10, _hoisted_1$n)) : (openBlock(), createElementBlock("button", {
         key: 1,
         class: normalizeClass(["button", `button_${_ctx.size}`])
       }, [
@@ -8098,7 +8131,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
   }
 });
 const _sfc_main$t = {};
-const _hoisted_1$l = {
+const _hoisted_1$m = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8106,7 +8139,7 @@ const _hoisted_1$l = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$d(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$l, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$m, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M29.3333 22.3203V6.22693C29.3333 4.62693 28.0266 3.44026 26.44 3.5736H26.36C23.56 3.8136 19.3066 5.24026 16.9333 6.7336L16.7066 6.88026C16.32 7.12026 15.68 7.12026 15.2933 6.88026L14.96 6.68026C12.5866 5.20026 8.34663 3.78693 5.54663 3.56026C3.95996 3.42693 2.66663 4.62693 2.66663 6.2136V22.3203C2.66663 23.6003 3.70663 24.8003 4.98663 24.9603L5.37329 25.0136C8.26663 25.4003 12.7333 26.8669 15.2933 28.2669L15.3466 28.2936C15.7066 28.4936 16.28 28.4936 16.6266 28.2936C19.1866 26.8803 23.6666 25.4003 26.5733 25.0136L27.0133 24.9603C28.2933 24.8003 29.3333 23.6003 29.3333 22.3203Z",
       stroke: "currentColor",
@@ -8142,7 +8175,7 @@ function _sfc_render$d(_ctx, _cache) {
 }
 const BookIcon = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$d]]);
 const _sfc_main$s = {};
-const _hoisted_1$k = {
+const _hoisted_1$l = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8150,7 +8183,7 @@ const _hoisted_1$k = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$c(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$k, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$l, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       opacity: "0.4",
       d: "M10.6666 16.2669H20",
@@ -8189,7 +8222,7 @@ function _sfc_render$c(_ctx, _cache) {
 }
 const ClipboardTextIcon = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$c]]);
 const _sfc_main$r = {};
-const _hoisted_1$j = {
+const _hoisted_1$k = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8197,7 +8230,7 @@ const _hoisted_1$j = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$b(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$j, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$k, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       opacity: "0.4",
       d: "M12.4141 19.6003L14.414 21.6003L19.7473 16.2669",
@@ -8226,7 +8259,7 @@ function _sfc_render$b(_ctx, _cache) {
 }
 const ClipboardTickIcon = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$b]]);
 const _sfc_main$q = {};
-const _hoisted_1$i = {
+const _hoisted_1$j = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8234,7 +8267,7 @@ const _hoisted_1$i = {
   xmlns: "http://www.w3.org/2000/svg"
 };
 function _sfc_render$a(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$i, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$j, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       opacity: "0.4",
       d: "M20.7732 15.9999C20.7732 18.6399 18.6399 20.7732 15.9999 20.7732C13.3599 20.7732 11.2266 18.6399 11.2266 15.9999C11.2266 13.3599 13.3599 11.2266 15.9999 11.2266C18.6399 11.2266 20.7732 13.3599 20.7732 15.9999Z",
@@ -8254,7 +8287,7 @@ function _sfc_render$a(_ctx, _cache) {
 }
 const EyeIcon = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$a]]);
 const _sfc_main$p = {};
-const _hoisted_1$h = {
+const _hoisted_1$i = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8262,7 +8295,7 @@ const _hoisted_1$h = {
   xmlns: "http://www.w3.org/2000/svg"
 };
 function _sfc_render$9(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$h, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$i, _cache[0] || (_cache[0] = [
     createStaticVNode('<path d="M19.3732 12.6266L12.6266 19.3732C11.7599 18.5065 11.2266 17.3199 11.2266 15.9999C11.2266 13.3599 13.3599 11.2266 15.9999 11.2266C17.3199 11.2266 18.5065 11.7599 19.3732 12.6266Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M23.7597 7.6933C21.4264 5.9333 18.7597 4.9733 15.9997 4.9733C11.2931 4.9733 6.90646 7.74663 3.85312 12.5466C2.65312 14.4267 2.65312 17.5867 3.85312 19.4667C4.90646 21.12 6.13313 22.5467 7.46646 23.6933" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path opacity="0.4" d="M11.2266 26.0403C12.7466 26.6803 14.3599 27.0269 15.9999 27.0269C20.7065 27.0269 25.0932 24.2536 28.1465 19.4536C29.3465 17.5736 29.3465 14.4136 28.1465 12.5336C27.7065 11.8402 27.2265 11.1869 26.7332 10.5736" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path opacity="0.4" d="M20.6793 16.9336C20.3326 18.8136 18.7993 20.3469 16.9193 20.6936" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12.6266 19.3731L2.66663 29.3331" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M29.3324 2.66666L19.3724 12.6267" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>', 6)
   ]));
 }
@@ -8314,7 +8347,7 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
   }
 });
 const _sfc_main$n = {};
-const _hoisted_1$g = {
+const _hoisted_1$h = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8322,7 +8355,7 @@ const _hoisted_1$g = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$8(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$g, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$h, _cache[0] || (_cache[0] = [
     createStaticVNode('<path d="M13.3333 7.99999H18.6666C21.3333 7.99999 21.3333 6.66666 21.3333 5.33332C21.3333 2.66666 20 2.66666 18.6666 2.66666H13.3333C12 2.66666 10.6666 2.66666 10.6666 5.33332C10.6666 7.99999 12 7.99999 13.3333 7.99999Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M21.3333 5.36002C25.7733 5.60002 28 7.24002 28 13.3333V21.3333C28 26.6667 26.6667 29.3333 20 29.3333H12C5.33333 29.3333 4 26.6667 4 21.3333V13.3333C4 7.25335 6.22667 5.60002 10.6667 5.36002" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><g opacity="0.4"><path d="M19.9672 20.6849C19.0067 21.6454 17.6296 21.9429 16.4141 21.5604L14.2125 23.7535C14.0595 23.915 13.745 24.017 13.5155 23.983L12.4955 23.847C12.1554 23.8045 11.8494 23.4815 11.7984 23.15L11.6624 22.1299C11.6284 21.9089 11.7389 21.5944 11.8919 21.4329L14.085 19.2398C13.711 18.0243 14 16.6473 14.9605 15.6867C16.3376 14.3097 18.5817 14.3097 19.9672 15.6867C21.3443 17.0553 21.3443 19.2993 19.9672 20.6849Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15.0119 22.9548L14.2894 22.2237" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.5155 18.2118H17.5236" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g>', 3)
   ]));
 }
@@ -8367,12 +8400,12 @@ password: ${props.project.password}
     };
   }
 });
-const _hoisted_1$f = { class: "current-content" };
-const _hoisted_2$6 = {
+const _hoisted_1$g = { class: "current-content" };
+const _hoisted_2$7 = {
   key: 0,
   class: "current-content__bg"
 };
-const _hoisted_3$6 = ["src"];
+const _hoisted_3$7 = ["src"];
 const _hoisted_4$1 = { class: "current-content__header" };
 const _hoisted_5$1 = ["href", "title"];
 const _hoisted_6$1 = ["src"];
@@ -8386,14 +8419,15 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     project: {}
   },
   setup(__props) {
+    const pStore = useProjectsStore();
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$f, [
-        _ctx.project.isImg ? (openBlock(), createElementBlock("div", _hoisted_2$6, [
+      return openBlock(), createElementBlock("div", _hoisted_1$g, [
+        _ctx.project.isImg ? (openBlock(), createElementBlock("div", _hoisted_2$7, [
           createBaseVNode("img", {
             src: unref(getProjectImg)(_ctx.project.url),
             width: "660",
             height: "120"
-          }, null, 8, _hoisted_3$6)
+          }, null, 8, _hoisted_3$7)
         ])) : createCommentVNode("", true),
         createBaseVNode("header", _hoisted_4$1, [
           createBaseVNode("a", {
@@ -8412,10 +8446,10 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
           ], 8, _hoisted_5$1),
           createBaseVNode("a", {
             class: "current-content__name",
-            href: _ctx.project.url.includes("http:") ? _ctx.project.url.replace("http:", "http://") : "https://" + _ctx.project.url,
+            href: "https://" + _ctx.project.url,
             target: "_blank"
           }, [
-            createBaseVNode("h1", null, toDisplayString(_ctx.project.name) + " (" + toDisplayString(_ctx.project.url.includes("http:") ? _ctx.project.url.replace("http:", "") : _ctx.project.url) + ")", 1)
+            createBaseVNode("h1", null, toDisplayString(_ctx.project.name) + " (" + toDisplayString(_ctx.project.url) + ")", 1)
           ], 8, _hoisted_8)
         ]),
         _ctx.project.git ? (openBlock(), createBlock(_sfc_main$u, {
@@ -8451,11 +8485,11 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
           target: "_blank"
         }, {
           default: withCtx(() => [
-            _cache[0] || (_cache[0] = createTextVNode("Инструкция ")),
+            _cache[1] || (_cache[1] = createTextVNode("Инструкция ")),
             createVNode(BookIcon)
           ]),
           _: 1,
-          __: [0]
+          __: [1]
         }, 8, ["href"])) : createCommentVNode("", true),
         _ctx.project.addDocument ? (openBlock(), createBlock(_sfc_main$u, {
           key: 4,
@@ -8463,13 +8497,12 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
           href: `https://${_ctx.project.addDocument}`,
           target: "_blank"
         }, {
-          default: withCtx(() => _cache[1] || (_cache[1] = [
+          default: withCtx(() => _cache[2] || (_cache[2] = [
             createTextVNode("Доп.Документ")
           ])),
           _: 1,
-          __: [1]
+          __: [2]
         }, 8, ["href"])) : createCommentVNode("", true),
-        createBaseVNode("p", null, toDisplayString(_ctx.project.isGitPull ? "Настроен скрипт авто git pull" : "Не настроен скрипт авто git pull"), 1),
         _ctx.project.login ? (openBlock(), createBlock(_sfc_main$o, {
           key: 5,
           text: _ctx.project.login
@@ -8482,12 +8515,21 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
         _ctx.project.login ? (openBlock(), createBlock(_sfc_main$m, {
           key: 7,
           project: _ctx.project
-        }, null, 8, ["project"])) : createCommentVNode("", true)
+        }, null, 8, ["project"])) : createCommentVNode("", true),
+        createVNode(_sfc_main$u, {
+          onClick: _cache[0] || (_cache[0] = ($event) => unref(pStore).remove(_ctx.project.url))
+        }, {
+          default: withCtx(() => _cache[3] || (_cache[3] = [
+            createTextVNode("Удалить проект")
+          ])),
+          _: 1,
+          __: [3]
+        })
       ]);
     };
   }
 });
-const _hoisted_1$e = {
+const _hoisted_1$f = {
   key: 0,
   class: "empty"
 };
@@ -8506,7 +8548,7 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
       });
     });
     return (_ctx, _cache) => {
-      return !project.value ? (openBlock(), createElementBlock("p", _hoisted_1$e, "Данный сайнт не найдев в ативных проектах 5 измерения")) : (openBlock(), createBlock(_sfc_main$l, {
+      return !project.value ? (openBlock(), createElementBlock("p", _hoisted_1$f, "Данный сайнт не найдев в ативных проектах 5 измерения")) : (openBlock(), createBlock(_sfc_main$l, {
         key: 1,
         project: project.value
       }, null, 8, ["project"]));
@@ -8730,7 +8772,7 @@ const _fix = function(str) {
   return str;
 };
 const _sfc_main$i = {};
-const _hoisted_1$d = {
+const _hoisted_1$e = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8738,14 +8780,14 @@ const _hoisted_1$d = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$6(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$d, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$e, _cache[0] || (_cache[0] = [
     createStaticVNode('<path d="M29.3333 16C29.3333 8.63999 23.36 2.66666 16 2.66666C8.63996 2.66666 2.66663 8.63999 2.66663 16C2.66663 23.36 8.63996 29.3333 16 29.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><g opacity="0.4"><path d="M10.6661 4H11.9994C9.39944 11.7867 9.39944 20.2133 11.9994 28H10.6661" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M20 4C21.2933 7.89333 21.9467 11.9467 21.9467 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 21.3333V20C7.89333 21.2933 11.9467 21.9467 16 21.9467" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 12.0001C11.7867 9.40014 20.2133 9.40014 28 12.0001" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></g><path d="M25.6146 20.9867L20.8946 25.7068C20.708 25.8935 20.5346 26.24 20.4946 26.4933L20.2413 28.2933C20.148 28.9467 20.6013 29.4 21.2546 29.3067L23.0546 29.0533C23.308 29.0133 23.668 28.84 23.8413 28.6533L28.5613 23.9333C29.3746 23.12 29.7613 22.1733 28.5613 20.9733C27.3746 19.7867 26.428 20.1733 25.6146 20.9867Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M24.9323 21.6667C25.3323 23.1067 26.4523 24.2267 27.8923 24.6267" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>', 4)
   ]));
 }
 const GlobalEditIcon = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$6]]);
-const _hoisted_1$c = ["src"];
-const _hoisted_2$5 = { class: "project-item__header" };
-const _hoisted_3$5 = { class: "project-item__title" };
+const _hoisted_1$d = ["src"];
+const _hoisted_2$6 = { class: "project-item__header" };
+const _hoisted_3$6 = { class: "project-item__title" };
 const _sfc_main$h = /* @__PURE__ */ defineComponent({
   __name: "ProjectItem",
   props: {
@@ -8758,7 +8800,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
         class: "project-item",
         tabindex: "0",
         role: "button",
-        onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("setSite"))
+        onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("setSite"))
       }, [
         _ctx.project.isImg ? (openBlock(), createElementBlock("img", {
           key: 0,
@@ -8767,16 +8809,18 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
           width: "579",
           height: "120",
           loading: "lazy"
-        }, null, 8, _hoisted_1$c)) : createCommentVNode("", true),
-        createBaseVNode("header", _hoisted_2$5, [
-          createBaseVNode("h2", _hoisted_3$5, toDisplayString(_ctx.project.name), 1),
+        }, null, 8, _hoisted_1$d)) : createCommentVNode("", true),
+        createBaseVNode("header", _hoisted_2$6, [
+          createBaseVNode("h2", _hoisted_3$6, toDisplayString(_ctx.project.name), 1),
           createVNode(_sfc_main$u, {
             size: "l",
-            href: _ctx.project.url.includes("http:") ? _ctx.project.url.replace("http:", "http://") : "https://" + _ctx.project.url,
-            target: "_blank"
+            href: "https://" + _ctx.project.url,
+            target: "_blank",
+            onClick: _cache[0] || (_cache[0] = withModifiers(() => {
+            }, ["stop"]))
           }, {
             default: withCtx(() => [
-              createTextVNode(toDisplayString(_ctx.project.url.includes("http:") ? _ctx.project.url.replace("http:", "") : _ctx.project.url), 1)
+              createTextVNode(toDisplayString(_ctx.project.url), 1)
             ]),
             _: 1
           }, 8, ["href"]),
@@ -8784,7 +8828,9 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
             size: "l",
             href: unref(getUrlAdminLogin)(_ctx.project.url, _ctx.project.urlAdmin, _ctx.project.cms),
             target: "_blank",
-            title: "Админ. раздел"
+            title: "Админ. раздел",
+            onClick: _cache[1] || (_cache[1] = withModifiers(() => {
+            }, ["stop"]))
           }, {
             default: withCtx(() => [
               createVNode(GlobalEditIcon)
@@ -8796,9 +8842,9 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$b = { class: "checkbox" };
-const _hoisted_2$4 = ["checked"];
-const _hoisted_3$4 = { class: "checkbox-label" };
+const _hoisted_1$c = { class: "checkbox" };
+const _hoisted_2$5 = ["checked"];
+const _hoisted_3$5 = { class: "checkbox-label" };
 const _sfc_main$g = /* @__PURE__ */ defineComponent({
   __name: "Checkbox",
   props: /* @__PURE__ */ mergeModels({
@@ -8812,14 +8858,14 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const model = useModel(__props, "modelValue");
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("label", _hoisted_1$b, [
+      return openBlock(), createElementBlock("label", _hoisted_1$c, [
         createBaseVNode("input", {
           class: "checkbox-input",
           type: "checkbox",
           checked: __props.modelValue,
           onChange: _cache[0] || (_cache[0] = ($event) => model.value = !__props.modelValue)
-        }, null, 40, _hoisted_2$4),
-        createBaseVNode("p", _hoisted_3$4, toDisplayString(_ctx.label), 1)
+        }, null, 40, _hoisted_2$5),
+        createBaseVNode("p", _hoisted_3$5, toDisplayString(_ctx.label), 1)
       ]);
     };
   }
@@ -8845,7 +8891,7 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
 });
 const Input = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["__scopeId", "data-v-64052fc6"]]);
 const _sfc_main$e = {};
-const _hoisted_1$a = {
+const _hoisted_1$b = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -8853,7 +8899,7 @@ const _hoisted_1$a = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$5(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$a, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$b, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M27.3301 27.1L4.2301 4",
       stroke: "currentColor",
@@ -8873,7 +8919,7 @@ function _sfc_render$5(_ctx, _cache) {
   ]));
 }
 const CloseIcon = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$5]]);
-const _hoisted_1$9 = { class: "search" };
+const _hoisted_1$a = { class: "search" };
 const _sfc_main$d = /* @__PURE__ */ defineComponent({
   __name: "Search",
   props: {
@@ -8884,7 +8930,7 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const model = useModel(__props, "modelValue");
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$9, [
+      return openBlock(), createElementBlock("div", _hoisted_1$a, [
         createVNode(Input, {
           modelValue: model.value,
           "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => model.value = $event),
@@ -8904,9 +8950,9 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$8 = { class: "empty-projects" };
-const _hoisted_2$3 = { class: "empty-projects__mess-api" };
-const _hoisted_3$3 = { class: "empty-projects__mess-upd" };
+const _hoisted_1$9 = { class: "empty-projects" };
+const _hoisted_2$4 = { class: "empty-projects__mess-api" };
+const _hoisted_3$4 = { class: "empty-projects__mess-upd" };
 const _sfc_main$c = /* @__PURE__ */ defineComponent({
   __name: "EmptyProjects",
   setup(__props) {
@@ -8917,16 +8963,16 @@ const _sfc_main$c = /* @__PURE__ */ defineComponent({
       set: (val) => mainStore.setApiUrl(val)
     });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$8, [
+      return openBlock(), createElementBlock("div", _hoisted_1$9, [
         _cache[4] || (_cache[4] = createBaseVNode("p", { class: "empty-projects__title" }, "Список проектов пуст", -1)),
-        createBaseVNode("div", _hoisted_2$3, [
+        createBaseVNode("div", _hoisted_2$4, [
           _cache[1] || (_cache[1] = createBaseVNode("p", null, "Проверьте доступность общего списка проектов", -1)),
           createVNode(Input, {
             modelValue: apiUrl.value,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => apiUrl.value = $event)
           }, null, 8, ["modelValue"])
         ]),
-        createBaseVNode("div", _hoisted_3$3, [
+        createBaseVNode("div", _hoisted_3$4, [
           _cache[3] || (_cache[3] = createBaseVNode("p", null, "Затем попробуйте обновить список", -1)),
           createVNode(_sfc_main$u, {
             onClick: unref(projectsStore).update
@@ -8942,7 +8988,7 @@ const _sfc_main$c = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$7 = { class: "current-wrapper" };
+const _hoisted_1$8 = { class: "current-wrapper" };
 const _sfc_main$b = /* @__PURE__ */ defineComponent({
   __name: "SelectProject",
   props: {
@@ -8951,7 +8997,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
   emits: ["backward"],
   setup(__props) {
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$7, [
+      return openBlock(), createElementBlock("div", _hoisted_1$8, [
         createVNode(_sfc_main$l, { project: _ctx.project }, null, 8, ["project"]),
         createVNode(_sfc_main$u, {
           class: "return",
@@ -8967,17 +9013,35 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$6 = { key: 0 };
-const _hoisted_2$2 = { class: "projects-header" };
-const _hoisted_3$2 = { class: "project-list" };
+const _hoisted_1$7 = { key: 0 };
+const _hoisted_2$3 = { class: "projects-header" };
+const _hoisted_3$3 = { class: "project-list" };
 const _sfc_main$a = /* @__PURE__ */ defineComponent({
   __name: "ProjectList",
-  setup(__props) {
+  emits: ["setIsFixHeight"],
+  setup(__props, { emit: __emit }) {
     const projectsStore = useProjectsStore();
     const isAccess = ref(false);
     const search = ref("");
     const searchRU = ref("");
     const searchEN = ref("");
+    const emits = __emit;
+    onUnmounted(() => {
+      emits("setIsFixHeight", true);
+    });
+    const backward = () => {
+      emits("setIsFixHeight", false);
+      selectProjectState.removeProject();
+    };
+    const setSite = (project) => {
+      emits("setIsFixHeight", true);
+      selectProjectState.setProject(project);
+    };
+    const getListSetFilters = () => {
+      const res = isAccess || search ? projectsStore.state.projects.filter(filterProjects) : projectsStore.state.projects;
+      if (!("url" in selectProjectState.state)) emits("setIsFixHeight", res.length <= 3);
+      return res;
+    };
     const selectProjectState = useSelectProjectStore();
     const searchComputed = computed({
       get: () => search.value,
@@ -9006,20 +9070,17 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock(Fragment, null, [
         createVNode(Transition, { name: "fade" }, {
-          default: withCtx(() => {
-            var _a;
-            return [
-              ((_a = unref(selectProjectState).state) == null ? void 0 : _a.url) ? (openBlock(), createBlock(_sfc_main$b, {
-                key: 0,
-                project: unref(selectProjectState).state,
-                onBackward: unref(selectProjectState).removeProject
-              }, null, 8, ["project", "onBackward"])) : createCommentVNode("", true)
-            ];
-          }),
+          default: withCtx(() => [
+            "url" in unref(selectProjectState).state ? (openBlock(), createBlock(_sfc_main$b, {
+              key: 0,
+              project: unref(selectProjectState).state,
+              onBackward: backward
+            }, null, 8, ["project"])) : createCommentVNode("", true)
+          ]),
           _: 1
         }),
-        unref(projectsStore).state.projects.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$6, [
-          createBaseVNode("header", _hoisted_2$2, [
+        unref(projectsStore).state.projects.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$7, [
+          createBaseVNode("header", _hoisted_2$3, [
             createVNode(_sfc_main$g, {
               label: "Есть доступ",
               modelValue: isAccess.value,
@@ -9039,12 +9100,12 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
               __: [2]
             }, 8, ["onClick"])
           ]),
-          createBaseVNode("ul", _hoisted_3$2, [
-            (openBlock(true), createElementBlock(Fragment, null, renderList(isAccess.value || search.value ? unref(projectsStore).state.projects.filter(filterProjects) : unref(projectsStore).state.projects, (project) => {
+          createBaseVNode("ul", _hoisted_3$3, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(getListSetFilters(), (project) => {
               return openBlock(), createBlock(_sfc_main$h, {
                 key: project.url,
                 project,
-                onSetSite: ($event) => unref(selectProjectState).setProject(project)
+                onSetSite: ($event) => setSite(project)
               }, null, 8, ["project", "onSetSite"]);
             }), 128))
           ])
@@ -9054,9 +9115,9 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
   }
 });
 const _sfc_main$9 = {};
-const _hoisted_1$5 = { class: "content" };
+const _hoisted_1$6 = { class: "content" };
 function _sfc_render$4(_ctx, _cache) {
-  return openBlock(), createElementBlock("div", _hoisted_1$5, [
+  return openBlock(), createElementBlock("div", _hoisted_1$6, [
     renderSlot(_ctx.$slots, "default")
   ]);
 }
@@ -9069,38 +9130,21 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
     const copyCode = () => {
       navigator.clipboard.writeText(
         `
-var ss = SpreadsheetApp.getActiveSpreadsheet(); // spreadsheet
+const ss = SpreadsheetApp.getActiveSpreadsheet()
 
-function getData(){
-  var sheetName = "Доступы к сайтам"; // название нужного листа
-  var s = ss.getSheetByName(sheetName); // получаем конкретный лист по имени
-  
-  if (!s) {
-    throw new Error("Лист 'Доступы к сайтам' не найден");
-  }
-  
-  var result = [],
-      range = 'A:E', // диапазон ячеек, который хотим выгружать
-      values = s.getRange(range).getValues(),
-      last_row = s.getLastRow(); // не нужно parseInt, метод уже возвращает число
-    
-  // начинаем с 1, чтобы пропустить заголовки (если они есть)
-  for (var i = 1; i < last_row; i++) {
-      result.push(values[i]);     
-  }
-  return result; 
+const getData = (range = 'A:D') => {
+  const s = ss.getSheetByName("Доступы к сайтам")
+  if (!s) throw new Error("Лист 'Доступы к сайтам' не найден")
+  const v = s.getRange(range).getValues()
+  return v.slice(1, s.getLastRow())
 }
 
-function doGet() {
+const doGet = (e) => {
   try {
-    var data = getData();
-    return ContentService.createTextOutput(
-      JSON.stringify({'result': data}))
-      .setMimeType(ContentService.MimeType.JSON);
+    const result = e?.parameter?.get === 'ftp' ? getData('A:H') : getData()
+    return ContentService.createTextOutput(JSON.stringify({result})).setMimeType(ContentService.MimeType.JSON)
   } catch (e) {
-    return ContentService.createTextOutput(
-      JSON.stringify({'error': e.message}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({'error': e.message})).setMimeType(ContentService.MimeType.JSON)
   }
 }
 `
@@ -9114,20 +9158,29 @@ function doGet() {
     return (_ctx, _cache) => {
       return openBlock(), createBlock(Content, { class: "instruction-page" }, {
         default: withCtx(() => [
-          _cache[14] || (_cache[14] = createBaseVNode("h2", null, "Инструкция по созданию api в гугл таблице", -1)),
+          _cache[15] || (_cache[15] = createBaseVNode("h2", null, "Инструкция по созданию api в гугл таблице", -1)),
           createBaseVNode("ol", null, [
             _cache[1] || (_cache[1] = createBaseVNode("li", null, "Переходим в нашу таблицу доступов", -1)),
             _cache[2] || (_cache[2] = createBaseVNode("li", null, 'Проверяем название листа. Должно быть так же "Доступы к сайтам"', -1)),
             _cache[3] || (_cache[3] = createBaseVNode("li", null, [
               createTextVNode(" Проверяем столбцы "),
               createBaseVNode("ul", null, [
-                createBaseVNode("li", null, "Название"),
-                createBaseVNode("li", null, "Адрес"),
-                createBaseVNode("li", null, "Логин"),
-                createBaseVNode("li", null, "Пароль")
+                createBaseVNode("li", null, "[A] Название"),
+                createBaseVNode("li", null, "[B] Адрес"),
+                createBaseVNode("li", null, "[C] Логин"),
+                createBaseVNode("li", null, "[D] Пароль")
               ])
             ], -1)),
-            _cache[4] || (_cache[4] = createBaseVNode("li", null, "В верхнем меню выбираем 👉Расширения 👉Apps script", -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("li", null, [
+              createTextVNode(" Для выгрузки с ftp доступами, проверьте еще "),
+              createBaseVNode("ul", null, [
+                createBaseVNode("li", null, "[E] стобец не выгружается"),
+                createBaseVNode("li", null, "[F] Домен"),
+                createBaseVNode("li", null, "[G] Логин"),
+                createBaseVNode("li", null, "[H] Пароль")
+              ])
+            ], -1)),
+            _cache[5] || (_cache[5] = createBaseVNode("li", null, "В верхнем меню выбираем 👉Расширения 👉Apps script", -1)),
             createBaseVNode("li", null, [
               _cache[0] || (_cache[0] = createTextVNode("Копируем код: ")),
               createVNode(_sfc_main$u, { onClick: copyCode }, {
@@ -9137,29 +9190,29 @@ function doGet() {
                 _: 1
               })
             ]),
-            _cache[5] || (_cache[5] = createBaseVNode("li", null, "Вставляем код в редактор, удаляя пустую функцию по умолчанию", -1)),
-            _cache[6] || (_cache[6] = createBaseVNode("li", null, "Нажимаем сверху кнопку 👉Начать развертывание", -1)),
-            _cache[7] || (_cache[7] = createBaseVNode("li", null, "👉Новое развертывание", -1)),
-            _cache[8] || (_cache[8] = createBaseVNode("li", null, "Выберите тип, нажимаем шестеренку, выбираем 👉Веб-приложение", -1)),
-            _cache[9] || (_cache[9] = createBaseVNode("li", null, "У кого есть доступ, ставим - 👉Все", -1)),
-            _cache[10] || (_cache[10] = createBaseVNode("li", null, "Предоставить доступ, дальше авторизация через гугл", -1)),
-            _cache[11] || (_cache[11] = createBaseVNode("li", null, "‼️На странице с восклицательным знаком - 👉Advanced 👉Go to [название_проекта] (unsafe)", -1)),
-            _cache[12] || (_cache[12] = createBaseVNode("li", null, "Копируем URL", -1)),
-            _cache[13] || (_cache[13] = createBaseVNode("li", null, "Вставляем в поле 👉Url до api с личными доступами👈 на предыдущем экране или в разделе настроек в дальнейшем", -1))
+            _cache[6] || (_cache[6] = createBaseVNode("li", null, "Вставляем код в редактор, удаляя пустую функцию по умолчанию", -1)),
+            _cache[7] || (_cache[7] = createBaseVNode("li", null, "Нажимаем сверху кнопку 👉Начать развертывание", -1)),
+            _cache[8] || (_cache[8] = createBaseVNode("li", null, "👉Новое развертывание", -1)),
+            _cache[9] || (_cache[9] = createBaseVNode("li", null, "Выберите тип, нажимаем шестеренку, выбираем 👉Веб-приложение", -1)),
+            _cache[10] || (_cache[10] = createBaseVNode("li", null, "У кого есть доступ, ставим - 👉Все", -1)),
+            _cache[11] || (_cache[11] = createBaseVNode("li", null, "Предоставить доступ, дальше авторизация через гугл", -1)),
+            _cache[12] || (_cache[12] = createBaseVNode("li", null, "‼️На странице с восклицательным знаком - 👉Advanced 👉Go to ... (unsafe)", -1)),
+            _cache[13] || (_cache[13] = createBaseVNode("li", null, "Копируем URL", -1)),
+            _cache[14] || (_cache[14] = createBaseVNode("li", null, "Вставляем в поле 👉Url до api с личными доступами👈 на предыдущем экране или в разделе настроек в дальнейшем", -1))
           ])
         ]),
         _: 1,
-        __: [14]
+        __: [15]
       });
     };
   }
 });
-const _hoisted_1$4 = { class: "welcome-wrapper" };
-const _hoisted_2$1 = {
+const _hoisted_1$5 = { class: "welcome-wrapper" };
+const _hoisted_2$2 = {
   key: 0,
   class: "welcome-page"
 };
-const _hoisted_3$1 = { class: "welcome-input-wrap" };
+const _hoisted_3$2 = { class: "welcome-input-wrap" };
 const _hoisted_4 = {
   key: 0,
   class: "welcome-input-wrap"
@@ -9169,12 +9222,18 @@ const _hoisted_6 = { class: "flex welcome-buttons" };
 const _hoisted_7 = { class: "welcome-return-wrap" };
 const _sfc_main$7 = /* @__PURE__ */ defineComponent({
   __name: "Welcome",
-  setup(__props) {
+  emits: ["setIsFixHeight"],
+  setup(__props, { emit: __emit }) {
     const store = useMainStore();
     const projectsStore = useProjectsStore();
     const apiAccessUrl = ref(store.state.apiAccessUrl);
     const layout = ref("welcome");
     const isLoadingProojectsErr = ref("");
+    const emits = __emit;
+    const setLayout = (name) => {
+      emits("setIsFixHeight", name === "welcome");
+      layout.value = name;
+    };
     const apiUrl = computed({
       get: () => store.state.apiUrl,
       set: (val) => store.setApiUrl(val)
@@ -9193,10 +9252,10 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
         await projectsStore.updateAccess();
     });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$4, [
-        layout.value === "welcome" ? (openBlock(), createElementBlock("div", _hoisted_2$1, [
+      return openBlock(), createElementBlock("div", _hoisted_1$5, [
+        layout.value === "welcome" ? (openBlock(), createElementBlock("div", _hoisted_2$2, [
           _cache[7] || (_cache[7] = createBaseVNode("h2", null, "Приветсвие", -1)),
-          createBaseVNode("div", _hoisted_3$1, [
+          createBaseVNode("div", _hoisted_3$2, [
             createVNode(Input, {
               class: "welcome-input",
               modelValue: apiAccessUrl.value,
@@ -9205,7 +9264,7 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
               style: { "padding-right": "140px" }
             }, null, 8, ["modelValue"]),
             createVNode(_sfc_main$u, {
-              onClick: _cache[1] || (_cache[1] = ($event) => layout.value = "instruction")
+              onClick: _cache[1] || (_cache[1] = ($event) => setLayout("instruction"))
             }, {
               default: withCtx(() => _cache[5] || (_cache[5] = [
                 createTextVNode("Как получить url?")
@@ -9242,7 +9301,7 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
           createBaseVNode("div", _hoisted_7, [
             createVNode(_sfc_main$u, {
               class: "welcome-return",
-              onClick: _cache[4] || (_cache[4] = ($event) => layout.value = "welcome")
+              onClick: _cache[4] || (_cache[4] = ($event) => setLayout("welcome"))
             }, {
               default: withCtx(() => _cache[8] || (_cache[8] = [
                 createTextVNode("Вернуться")
@@ -9257,7 +9316,7 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
   }
 });
 const _sfc_main$6 = {};
-const _hoisted_1$3 = {
+const _hoisted_1$4 = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -9265,7 +9324,7 @@ const _hoisted_1$3 = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$3(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$3, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$4, _cache[0] || (_cache[0] = [
     createBaseVNode("path", {
       d: "M16 29.3333C23.3333 29.3333 29.3333 23.3333 29.3333 16C29.3333 8.66666 23.3333 2.66666 16 2.66666C8.66663 2.66666 2.66663 8.66666 2.66663 16C2.66663 23.3333 8.66663 29.3333 16 29.3333Z",
       stroke: "currentColor",
@@ -9293,7 +9352,7 @@ function _sfc_render$3(_ctx, _cache) {
 }
 const InfoCircleIcon = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$3]]);
 const _sfc_main$5 = {};
-const _hoisted_1$2 = {
+const _hoisted_1$3 = {
   width: "32",
   height: "32",
   viewBox: "0 0 32 32",
@@ -9301,7 +9360,7 @@ const _hoisted_1$2 = {
   xmlns: "https://www.w3.org/2000/svg"
 };
 function _sfc_render$2(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$2, _cache[0] || (_cache[0] = [
+  return openBlock(), createElementBlock("svg", _hoisted_1$3, _cache[0] || (_cache[0] = [
     createStaticVNode('<path d="M13.3333 5.99999V24C13.3333 25.44 12.7466 26.76 11.8133 27.72L11.76 27.7733C11.64 27.8933 11.5066 28.0133 11.3866 28.1067C10.9866 28.4533 10.5333 28.72 10.0666 28.9067C9.91995 28.9733 9.77329 29.0267 9.62663 29.08C9.10663 29.2533 8.54663 29.3333 7.99996 29.3333C7.63996 29.3333 7.27997 29.2933 6.93331 29.2267C6.75997 29.1867 6.58663 29.1467 6.41329 29.0933C6.19996 29.0267 5.99997 28.96 5.79997 28.8667C5.79997 28.8533 5.79996 28.8533 5.78663 28.8667C5.41329 28.68 5.05331 28.4667 4.71997 28.2133L4.70663 28.2C4.53329 28.0667 4.37331 27.9333 4.22664 27.7733C4.07997 27.6133 3.93329 27.4533 3.78663 27.28C3.53329 26.9467 3.31997 26.5867 3.13331 26.2133C3.14664 26.2 3.14664 26.2 3.13331 26.2C3.13331 26.2 3.13329 26.1867 3.11996 26.1733C3.03996 25.9867 2.97328 25.7867 2.90661 25.5867C2.85328 25.4133 2.81328 25.24 2.77328 25.0667C2.70661 24.72 2.66663 24.36 2.66663 24V5.99999C2.66663 3.99999 3.99996 2.66666 5.99996 2.66666H9.99996C12 2.66666 13.3333 3.99999 13.3333 5.99999Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path opacity="0.4" d="M29.3333 22V26C29.3333 28 28 29.3333 26 29.3333H8C8.54667 29.3333 9.10667 29.2533 9.62667 29.08C9.77333 29.0267 9.91999 28.9733 10.0667 28.9067C10.5333 28.72 10.9867 28.4533 11.3867 28.1067C11.5067 28.0133 11.64 27.8933 11.76 27.7733L11.8133 27.72L20.88 18.6667H26C28 18.6667 29.3333 20 29.3333 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.41292 29.0932C5.61292 28.8532 4.85294 28.4132 4.22628 27.7732C3.58628 27.1465 3.14625 26.3865 2.90625 25.5865C3.42625 27.2532 4.74625 28.5732 6.41292 29.0932Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M24.4925 15.0532L20.8792 18.6667L11.8125 27.7199C12.7458 26.7599 13.3325 25.44 13.3325 24V11.1199L16.9459 7.50662C18.3592 6.09329 20.2525 6.09329 21.6659 7.50662L24.4925 10.3333C25.9059 11.7466 25.9059 13.6399 24.4925 15.0532Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path opacity="0.4" d="M7.99996 25.3333C8.73633 25.3333 9.33329 24.7364 9.33329 24C9.33329 23.2636 8.73633 22.6667 7.99996 22.6667C7.26359 22.6667 6.66663 23.2636 6.66663 24C6.66663 24.7364 7.26359 25.3333 7.99996 25.3333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>', 5)
   ]));
 }
@@ -9334,9 +9393,9 @@ const formateDateRu = (date) => {
   };
   return new Intl.DateTimeFormat("ru-RU", options).format(fDate);
 };
-const _hoisted_1$1 = { class: "notice-container" };
-const _hoisted_2 = { class: "notice-list" };
-const _hoisted_3 = {
+const _hoisted_1$2 = { class: "notice-container" };
+const _hoisted_2$1 = { class: "notice-list" };
+const _hoisted_3$1 = {
   key: 1,
   class: "notice-empty"
 };
@@ -9346,9 +9405,9 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
     const noticeStore = useNoticeStore();
     return (_ctx, _cache) => {
       const _component_datetime = resolveComponent("datetime");
-      return openBlock(), createElementBlock("div", _hoisted_1$1, [
+      return openBlock(), createElementBlock("div", _hoisted_1$2, [
         unref(noticeStore).state.length > 0 ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-          createBaseVNode("ul", _hoisted_2, [
+          createBaseVNode("ul", _hoisted_2$1, [
             (openBlock(true), createElementBlock(Fragment, null, renderList(unref(noticeStore).state, (notice) => {
               return openBlock(), createElementBlock("li", {
                 key: notice.timestamp,
@@ -9385,7 +9444,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
             _: 1,
             __: [0]
           }, 8, ["onClick"])
-        ], 64)) : (openBlock(), createElementBlock("p", _hoisted_3, " Уведомлений нет "))
+        ], 64)) : (openBlock(), createElementBlock("p", _hoisted_3$1, " Уведомлений нет "))
       ]);
     };
   }
@@ -9395,6 +9454,9 @@ function _sfc_render$1(_ctx, _cache) {
   return " Аудит сайта ";
 }
 const Audit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$1]]);
+const _hoisted_1$1 = { class: "settings-form" };
+const _hoisted_2 = { class: "settings-form__field" };
+const _hoisted_3 = { class: "settings-form__field" };
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "Settings",
   setup(__props) {
@@ -9408,30 +9470,35 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       set: (val) => mainStore.setApiAccessUrl(val)
     });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock(Fragment, null, [
-        _cache[3] || (_cache[3] = createTextVNode(" Настройки ")),
-        createVNode(Input, {
-          modelValue: apiUrl.value,
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => apiUrl.value = $event)
-        }, null, 8, ["modelValue"]),
-        createVNode(Input, {
-          modelValue: apiAccessUrl.value,
-          "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => apiAccessUrl.value = $event)
-        }, null, 8, ["modelValue"]),
+      return openBlock(), createElementBlock("form", _hoisted_1$1, [
+        createBaseVNode("div", _hoisted_2, [
+          _cache[2] || (_cache[2] = createBaseVNode("span", null, "Ссылка на получение всех проектов", -1)),
+          createVNode(Input, {
+            modelValue: apiUrl.value,
+            "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => apiUrl.value = $event)
+          }, null, 8, ["modelValue"])
+        ]),
+        createBaseVNode("div", _hoisted_3, [
+          _cache[3] || (_cache[3] = createBaseVNode("span", null, "Ссылка на получение личных доступов", -1)),
+          createVNode(Input, {
+            modelValue: apiAccessUrl.value,
+            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => apiAccessUrl.value = $event)
+          }, null, 8, ["modelValue"])
+        ]),
         createVNode(_sfc_main$u, { onClick: unref(removeFromStorage) }, {
-          default: withCtx(() => _cache[2] || (_cache[2] = [
+          default: withCtx(() => _cache[4] || (_cache[4] = [
             createTextVNode(" Сбросить настройки и данные ")
           ])),
           _: 1,
-          __: [2]
+          __: [4]
         }, 8, ["onClick"])
-      ], 64);
+      ]);
     };
   }
 });
 const _sfc_main$1 = {};
 const _hoisted_1 = {
-  xmlns: "http://www.w3.org/2000/svg",
+  xmlns: "https://www.w3.org/2000/svg",
   width: "32",
   height: "32",
   fill: "none",
@@ -9448,10 +9515,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "App",
   setup(__props) {
     const isLoading = ref(true);
+    const fixHeight = ref(true);
     const store = useMainStore();
     const projectsStore = useProjectsStore();
     const noticeStore = useNoticeStore();
     const selectProjectState = useSelectProjectStore();
+    const setIsFixHeight = (v) => fixHeight.value = v;
     onMounted(async () => {
       await store.loadFromStorage();
       await projectsStore.loadFromStorage();
@@ -9461,103 +9530,106 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     });
     return (_ctx, _cache) => {
       return openBlock(), createBlock(LayoutsDefault, null, {
-        default: withCtx(() => {
-          var _a;
-          return [
-            createVNode(Transition, { name: "fade" }, {
-              default: withCtx(() => [
-                unref(store).state.init ? (openBlock(), createBlock(_sfc_main$7, { key: 0 })) : createCommentVNode("", true)
-              ]),
-              _: 1
-            }),
-            !isLoading.value ? (openBlock(), createBlock(_sfc_main$y, {
-              key: 0,
-              fixHeight: !(!((_a = unref(selectProjectState).state) == null ? void 0 : _a.url) && (unref(store).state.page === "projectList" && unref(projectsStore).state.projects.length > 3))
-            }, {
-              default: withCtx(() => [
-                unref(store).state.page === "currentSite" ? (openBlock(), createBlock(Current, { key: 0 })) : unref(store).state.page === "utility" ? (openBlock(), createBlock(Utility, { key: 1 })) : unref(store).state.page === "projectList" ? (openBlock(), createBlock(_sfc_main$a, { key: 2 })) : unref(store).state.page === "settings" ? (openBlock(), createBlock(_sfc_main$2, { key: 3 })) : unref(store).state.page === "audit" ? (openBlock(), createBlock(Audit, { key: 4 })) : unref(store).state.page === "notification" ? (openBlock(), createBlock(_sfc_main$4, { key: 5 })) : createCommentVNode("", true)
-              ]),
-              _: 1
-            }, 8, ["fixHeight"])) : createCommentVNode("", true),
-            createVNode(PopupNav, null, {
-              default: withCtx(() => [
-                createVNode(_sfc_main$w, {
-                  title: "Текущий проект",
-                  onClick: _cache[0] || (_cache[0] = ($event) => unref(store).setPage("currentSite")),
-                  active: unref(store).state.page === "currentSite"
-                }, {
-                  default: withCtx(() => [
-                    createVNode(LocationIcon)
-                  ]),
-                  _: 1
-                }, 8, ["active"]),
-                createVNode(_sfc_main$w, {
-                  title: "Полезные сервисы",
-                  onClick: _cache[1] || (_cache[1] = ($event) => unref(store).setPage("utility")),
-                  active: unref(store).state.page === "utility"
-                }, {
-                  default: withCtx(() => [
-                    createVNode(LayerIcon)
-                  ]),
-                  _: 1
-                }, 8, ["active"]),
-                createVNode(_sfc_main$w, {
-                  title: "Список проектов",
-                  onClick: _cache[2] || (_cache[2] = ($event) => unref(store).setPage("projectList")),
-                  active: unref(store).state.page === "projectList"
-                }, {
-                  default: withCtx(() => [
-                    unref(projectsStore).state.projects.length > 0 ? (openBlock(), createBlock(FolderIcon, { key: 0 })) : (openBlock(), createBlock(FolderIconEmpty, { key: 1 }))
-                  ]),
-                  _: 1
-                }, 8, ["active"]),
-                createVNode(_sfc_main$w, {
-                  title: "Обновить проекты и доступы",
-                  onClick: unref(projectsStore).updateAll,
-                  active: unref(projectsStore).state.isLoading || unref(projectsStore).state.isLoadingAccess,
-                  disabled: unref(projectsStore).state.isLoading || unref(projectsStore).state.isLoadingAccess
-                }, {
-                  default: withCtx(() => [
-                    unref(projectsStore).state.isLoading || unref(projectsStore).state.isLoadingAccess ? (openBlock(), createBlock(CloudChangeAnimIcon, { key: 0 })) : (openBlock(), createBlock(CloudChangeIcon, { key: 1 }))
-                  ]),
-                  _: 1
-                }, 8, ["onClick", "active", "disabled"]),
-                createVNode(_sfc_main$w, {
-                  title: "Аудит сайта",
-                  onClick: _cache[3] || (_cache[3] = ($event) => unref(store).setPage("audit")),
-                  active: unref(store).state.page === "audit"
-                }, {
-                  default: withCtx(() => [
-                    createVNode(ColorSwatchIcon)
-                  ]),
-                  _: 1
-                }, 8, ["active"]),
-                createVNode(_sfc_main$w, {
-                  title: "Уведомления",
-                  onClick: _cache[4] || (_cache[4] = ($event) => unref(store).setPage("notification")),
-                  active: unref(store).state.page === "notification",
-                  count: unref(noticeStore).state.length
-                }, {
-                  default: withCtx(() => [
-                    createVNode(InfoCircleIcon)
-                  ]),
-                  _: 1
-                }, 8, ["active", "count"]),
-                createVNode(_sfc_main$w, {
-                  title: "Sup 5th v 3.0.0",
-                  onClick: _cache[5] || (_cache[5] = ($event) => unref(store).setPage("settings")),
-                  active: unref(store).state.page === "settings"
-                }, {
-                  default: withCtx(() => [
-                    createVNode(ConvertIcon)
-                  ]),
-                  _: 1
-                }, 8, ["active"])
-              ]),
-              _: 1
-            })
-          ];
-        }),
+        default: withCtx(() => [
+          createVNode(Transition, { name: "fade" }, {
+            default: withCtx(() => [
+              unref(store).state.init ? (openBlock(), createBlock(_sfc_main$7, {
+                key: 0,
+                onSetIsFixHeight: setIsFixHeight
+              })) : createCommentVNode("", true)
+            ]),
+            _: 1
+          }),
+          !isLoading.value ? (openBlock(), createBlock(_sfc_main$y, {
+            key: 0,
+            fixHeight: fixHeight.value
+          }, {
+            default: withCtx(() => [
+              unref(store).state.page === "currentSite" ? (openBlock(), createBlock(Current, { key: 0 })) : unref(store).state.page === "utility" ? (openBlock(), createBlock(Utility, { key: 1 })) : unref(store).state.page === "projectList" ? (openBlock(), createBlock(_sfc_main$a, {
+                key: 2,
+                onSetIsFixHeight: setIsFixHeight
+              })) : unref(store).state.page === "settings" ? (openBlock(), createBlock(_sfc_main$2, { key: 3 })) : unref(store).state.page === "audit" ? (openBlock(), createBlock(Audit, { key: 4 })) : unref(store).state.page === "notification" ? (openBlock(), createBlock(_sfc_main$4, { key: 5 })) : createCommentVNode("", true)
+            ]),
+            _: 1
+          }, 8, ["fixHeight"])) : createCommentVNode("", true),
+          createVNode(PopupNav, null, {
+            default: withCtx(() => [
+              createVNode(_sfc_main$w, {
+                title: "Текущий проект",
+                onClick: _cache[0] || (_cache[0] = ($event) => unref(store).setPage("currentSite")),
+                active: unref(store).state.page === "currentSite"
+              }, {
+                default: withCtx(() => [
+                  createVNode(LocationIcon)
+                ]),
+                _: 1
+              }, 8, ["active"]),
+              createVNode(_sfc_main$w, {
+                title: "Полезные сервисы",
+                onClick: _cache[1] || (_cache[1] = ($event) => unref(store).setPage("utility")),
+                active: unref(store).state.page === "utility"
+              }, {
+                default: withCtx(() => [
+                  createVNode(LayerIcon)
+                ]),
+                _: 1
+              }, 8, ["active"]),
+              createVNode(_sfc_main$w, {
+                title: "Список проектов",
+                onClick: _cache[2] || (_cache[2] = ($event) => unref(store).setPage("projectList")),
+                active: unref(store).state.page === "projectList"
+              }, {
+                default: withCtx(() => [
+                  unref(projectsStore).state.projects.length > 0 ? (openBlock(), createBlock(FolderIcon, { key: 0 })) : (openBlock(), createBlock(FolderIconEmpty, { key: 1 }))
+                ]),
+                _: 1
+              }, 8, ["active"]),
+              createVNode(_sfc_main$w, {
+                title: "Обновить проекты и доступы",
+                onClick: unref(projectsStore).updateAll,
+                active: unref(projectsStore).state.isLoading || unref(projectsStore).state.isLoadingAccess,
+                disabled: unref(projectsStore).state.isLoading || unref(projectsStore).state.isLoadingAccess
+              }, {
+                default: withCtx(() => [
+                  unref(projectsStore).state.isLoading || unref(projectsStore).state.isLoadingAccess ? (openBlock(), createBlock(CloudChangeAnimIcon, { key: 0 })) : (openBlock(), createBlock(CloudChangeIcon, { key: 1 }))
+                ]),
+                _: 1
+              }, 8, ["onClick", "active", "disabled"]),
+              createVNode(_sfc_main$w, {
+                title: "Аудит сайта",
+                onClick: _cache[3] || (_cache[3] = ($event) => unref(store).setPage("audit")),
+                active: unref(store).state.page === "audit"
+              }, {
+                default: withCtx(() => [
+                  createVNode(ColorSwatchIcon)
+                ]),
+                _: 1
+              }, 8, ["active"]),
+              createVNode(_sfc_main$w, {
+                title: "Уведомления",
+                onClick: _cache[4] || (_cache[4] = ($event) => unref(store).setPage("notification")),
+                active: unref(store).state.page === "notification",
+                count: unref(noticeStore).state.length
+              }, {
+                default: withCtx(() => [
+                  createVNode(InfoCircleIcon)
+                ]),
+                _: 1
+              }, 8, ["active", "count"]),
+              createVNode(_sfc_main$w, {
+                title: "Sup 5th v 3.0.0",
+                onClick: _cache[5] || (_cache[5] = ($event) => unref(store).setPage("settings")),
+                active: unref(store).state.page === "settings"
+              }, {
+                default: withCtx(() => [
+                  createVNode(ConvertIcon)
+                ]),
+                _: 1
+              }, 8, ["active"])
+            ]),
+            _: 1
+          })
+        ]),
         _: 1
       });
     };

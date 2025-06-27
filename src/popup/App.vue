@@ -1,12 +1,12 @@
 <template>
   <LayoutsDefault>
     <transition name="fade">
-      <Welcome v-if="store.state.init" />
+      <Welcome v-if="store.state.init" @setIsFixHeight="setIsFixHeight"/>
     </transition>
-    <PopupContent v-if="!isLoading" :fixHeight="!(!selectProjectState.state?.url && (store.state.page === 'projectList' && projectsStore.state.projects.length > 3))">
+    <PopupContent v-if="!isLoading" :fixHeight>
       <Current v-if="store.state.page === 'currentSite'" />
       <Utility v-else-if="store.state.page === 'utility'" />
-      <ProjectList v-else-if="store.state.page === 'projectList'"/>
+      <ProjectList v-else-if="store.state.page === 'projectList'" @setIsFixHeight="setIsFixHeight"/>
       <Settings v-else-if="store.state.page === 'settings'" />
       <Audit v-else-if="store.state.page === 'audit'" />
       <Notification v-else-if="store.state.page === 'notification'" />
@@ -69,11 +69,14 @@ import Settings from '@/pages/Settings.vue';
 import CloudChangeAnimIcon from '@/components/icons/CloudChangeAnimIcon.vue';
 
 const isLoading = ref(true)
+const fixHeight = ref(true)
 
 const store = useMainStore()
 const projectsStore = useProjectsStore()
 const noticeStore = useNoticeStore()
 const selectProjectState = useSelectProjectStore()
+
+const setIsFixHeight = (v: boolean) => fixHeight.value = v
 
 onMounted(async () => {
   await store.loadFromStorage()

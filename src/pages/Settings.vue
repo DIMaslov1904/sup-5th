@@ -1,12 +1,19 @@
 <template>
-  Настройки
-  <Input v-model="apiUrl"/>
-  <Input v-model="apiAccessUrl"/>
+  <form class="settings-form">
+    <div class="settings-form__field">
+      <span>Ссылка на получение всех проектов</span>
+      <Input v-model="apiUrl"/>
+    </div>
+    <div class="settings-form__field">
+      <span>Ссылка на получение личных доступов</span>
+      <Input v-model="apiAccessUrl"/>
+    </div>
 
-  
-  <Button @click="removeFromStorage">
-    Сбросить настройки и данные
-  </Button>
+    
+    <Button @click="removeFromStorage">
+      Сбросить настройки и данные
+    </Button>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -29,4 +36,16 @@ const apiAccessUrl = computed({
 </script>
 
 <style lang="scss">
+.settings-form {
+  display: grid;
+  gap: 23px;
+  padding: 20px;  
+  justify-items: start;
+}
+
+.settings-form__field {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
 </style>

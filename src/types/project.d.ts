@@ -10,7 +10,6 @@ type Project = {
   git: string
   figma: string
   addDocument: string
-  isGitPull: boolean
   updateAt: number
   isImg: boolean,
   widgetPosition?: { x: number; y: number }

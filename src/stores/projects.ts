@@ -25,7 +25,6 @@ const defaultStateOne = (): Project => ({
   git: "",
   figma: "",
   addDocument: "",
-  isGitPull: false,
   updateAt: new Date().getTime(),
   isImg: false
 });
@@ -98,8 +97,16 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
   };
 
   const cleanUrl = (url: string) => {
-    return url.replace("https://", "");
+    return url.replace("https://", "").replace('http://', '');
   };
+
+  const getHost = (url: string) => { 
+    try {
+      return new URL('https://' + url).host;
+    } catch (_) { 
+      return url;
+    }
+  }
 
   const update = async () => {
     const noticeStore = useNoticeStore();
@@ -127,7 +134,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
       for (const item of res.result) {
             const newItem = {
               name: item[0],
-              url: cleanUrl(item[1]).replaceAll("/", ""),
+              url: getHost(cleanUrl(item[1])),
               subdomain: item[2],
               urlAdmin: cleanUrl(item[4]),
               cms: item[5],
@@ -189,7 +196,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
 
     for (const item of res.result) {
       const newItem = {
-        url: cleanUrl(item[1]).replaceAll("/", ""),
+        url: getHost(cleanUrl(item[1])),
         login: item[2],
         password: item[3],
       };
@@ -254,6 +261,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     state,
     edit,
     update,
+    remove,
     updateIsImg,
     updateAccess,
     updateAll,

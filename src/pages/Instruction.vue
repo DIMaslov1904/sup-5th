@@ -7,10 +7,19 @@
       <li>
         Проверяем столбцы
         <ul>
-          <li>Название</li>
-          <li>Адрес</li>
-          <li>Логин</li>
-          <li>Пароль</li>
+          <li>[A] Название</li>
+          <li>[B] Адрес</li>
+          <li>[C] Логин</li>
+          <li>[D] Пароль</li>
+        </ul>
+      </li>
+      <li>
+        Для выгрузки с ftp доступами, проверьте еще
+        <ul>
+          <li>[E] стобец не выгружается</li>
+          <li>[F] Домен</li>
+          <li>[G] Логин</li>
+          <li>[H] Пароль</li>
         </ul>
       </li>
       <li>В верхнем меню выбираем &#128073;Расширения &#128073;Apps script</li>
@@ -21,7 +30,7 @@
       <li>Выберите тип, нажимаем шестеренку, выбираем &#128073;Веб-приложение</li>
       <li>У кого есть доступ, ставим - &#128073;Все</li>
       <li>Предоставить доступ, дальше авторизация через гугл</li>
-      <li>‼️На странице с восклицательным знаком - &#128073;Advanced &#128073;Go to [название_проекта] (unsafe)</li>
+      <li>‼️На странице с восклицательным знаком - &#128073;Advanced &#128073;Go to ... (unsafe)</li>
       <li>Копируем URL</li>
       <li>Вставляем в поле &#128073;Url до api с личными доступами&#128072; на предыдущем экране или в разделе настроек в
         дальнейшем</li>
@@ -41,38 +50,21 @@ const copyCodeText = ref('Скопировать код')
 const copyCode = () => {
   navigator.clipboard.writeText(
     `
-var ss = SpreadsheetApp.getActiveSpreadsheet(); // spreadsheet
+const ss = SpreadsheetApp.getActiveSpreadsheet()
 
-function getData(){
-  var sheetName = "Доступы к сайтам"; // название нужного листа
-  var s = ss.getSheetByName(sheetName); // получаем конкретный лист по имени
-  
-  if (!s) {
-    throw new Error("Лист 'Доступы к сайтам' не найден");
-  }
-  
-  var result = [],
-      range = 'A:E', // диапазон ячеек, который хотим выгружать
-      values = s.getRange(range).getValues(),
-      last_row = s.getLastRow(); // не нужно parseInt, метод уже возвращает число
-    
-  // начинаем с 1, чтобы пропустить заголовки (если они есть)
-  for (var i = 1; i < last_row; i++) {
-      result.push(values[i]);     
-  }
-  return result; 
+const getData = (range = 'A:D') => {
+  const s = ss.getSheetByName("Доступы к сайтам")
+  if (!s) throw new Error("Лист 'Доступы к сайтам' не найден")
+  const v = s.getRange(range).getValues()
+  return v.slice(1, s.getLastRow())
 }
 
-function doGet() {
+const doGet = (e) => {
   try {
-    var data = getData();
-    return ContentService.createTextOutput(
-      JSON.stringify({'result': data}))
-      .setMimeType(ContentService.MimeType.JSON);
+    const result = e?.parameter?.get === 'ftp' ? getData('A:H') : getData()
+    return ContentService.createTextOutput(JSON.stringify({result})).setMimeType(ContentService.MimeType.JSON)
   } catch (e) {
-    return ContentService.createTextOutput(
-      JSON.stringify({'error': e.message}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({'error': e.message})).setMimeType(ContentService.MimeType.JSON)
   }
 }
 `

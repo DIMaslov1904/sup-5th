@@ -31,7 +31,7 @@ defineProps<{
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 9 6'%3e%3cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.07143' d='M7.83268.70898 3.24935 5.29232 1.16602 3.20898'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='https://www.w3.org/2000/svg' fill='none' viewBox='0 0 9 6'%3e%3cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.07143' d='M7.83268.70898 3.24935 5.29232 1.16602 3.20898'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: center;
     background-size: 10px;

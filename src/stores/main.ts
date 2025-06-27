@@ -8,7 +8,7 @@ const STORAGE_NAME = 'mainState'
 const defaultState = () => ({
   page: 'currentSite',
   apiUrl: URL_ALL_PROJECTS,
-  apiAccessUrl: '',
+  apiAccessUrl: 'https://script.google.com/macros/s/AKfycbxhWA-PJLQT6sswIlwg_0wjXWhy9cuJeYa90yhnXaU1sHY6_Yyt4qmspU1YBzdBaU3B/exec', //TODO: удалить 
   hiddenAdmButton: false
 })
 
