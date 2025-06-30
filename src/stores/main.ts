@@ -1,47 +1,49 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { setToStorage, getFromStorage } from '@/utils/chrome-api'
-import { URL_ALL_PROJECTS } from '@/globVars'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { setToStorage, getFromStorage } from "@/utils/chrome-api";
+import { URL_ALL_PROJECTS } from "@/globVars";
 
-const STORAGE_NAME = 'mainState'
+const STORAGE_NAME = "mainState";
 
 const defaultState = () => ({
-  page: 'currentSite',
+  page: "currentSite",
   apiUrl: URL_ALL_PROJECTS,
-  apiAccessUrl: 'https://script.google.com/macros/s/AKfycbxhWA-PJLQT6sswIlwg_0wjXWhy9cuJeYa90yhnXaU1sHY6_Yyt4qmspU1YBzdBaU3B/exec', //TODO: удалить 
-  hiddenAdmButton: false
-})
+  apiAccessUrl:
+    "https://script.google.com/macros/s/AKfycbxhWA-PJLQT6sswIlwg_0wjXWhy9cuJeYa90yhnXaU1sHY6_Yyt4qmspU1YBzdBaU3B/exec", //TODO: удалить
+  hiddenAdmButton: false,
+});
 
 export const useMainStore = defineStore(STORAGE_NAME, () => {
-  const state = ref<any>(defaultState())
-  
+  const state = ref<any>(defaultState());
+
   const setPage = (pageIn: string) => {
-    state.value = {...state.value,  page: pageIn}
-    saveToStorage()
-  }
+    state.value = { ...state.value, page: pageIn };
+    saveToStorage();
+  };
 
   const setApiUrl = (urlIn: string) => {
-    state.value = {...state.value,  apiUrl: urlIn}
-    saveToStorage()
-  }
+    state.value = { ...state.value, apiUrl: urlIn };
+    saveToStorage();
+  };
 
   const setApiAccessUrl = (urlIn: string) => {
-    state.value = {...state.value,  apiAccessUrl: urlIn, init: undefined}
-    saveToStorage()
-  }
-  
-  const saveToStorage = () => setToStorage(STORAGE_NAME, state.value)
+    state.value = { ...state.value, apiAccessUrl: urlIn, init: undefined };
+    saveToStorage();
+  };
+
+  const saveToStorage = () => setToStorage(STORAGE_NAME, state.value);
 
   const loadFromStorage = async () => {
-    const result = await getFromStorage(STORAGE_NAME)
-    state.value = (result === undefined) ? {...state.value, init: true} : result
-  }
-  
+    const result = await getFromStorage(STORAGE_NAME);
+    state.value =
+      result === undefined ? { ...state.value, init: true } : result;
+  };
+
   return {
     state,
     setPage,
     setApiUrl,
     setApiAccessUrl,
-    loadFromStorage
-  }
-})
+    loadFromStorage,
+  };
+});

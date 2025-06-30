@@ -5,7 +5,7 @@
     </transition>
     <PopupContent v-if="!isLoading" :fixHeight>
       <Current v-if="store.state.page === 'currentSite'" />
-      <Utility v-else-if="store.state.page === 'utility'" />
+      <Services v-else-if="store.state.page === 'services'" />
       <ProjectList v-else-if="store.state.page === 'projectList'" @setIsFixHeight="setIsFixHeight"/>
       <Settings v-else-if="store.state.page === 'settings'" />
       <Audit v-else-if="store.state.page === 'audit'" />
@@ -15,7 +15,7 @@
       <PopupNavItem title="Текущий проект" @click="store.setPage('currentSite')" :active="store.state.page === 'currentSite'">
         <LocationIcon />
       </PopupNavItem>
-      <PopupNavItem title="Полезные сервисы" @click="store.setPage('utility')" :active="store.state.page === 'utility'">
+      <PopupNavItem title="Полезные сервисы" @click="store.setPage('services')" :active="store.state.page === 'services'">
         <LayerIcon />
       </PopupNavItem>
       <PopupNavItem title="Список проектов" @click="store.setPage('projectList')"
@@ -58,7 +58,7 @@ import PopupNav from '@/components/PopupNav.vue';
 import PopupNavItem from '@/components/PopupNavItem.vue';
 import LayoutsDefault from '@/layouts/LayoutsDefault.vue';
 import Current from '@/pages/Current.vue';
-import Utility from '@/pages/Utility.vue';
+import Services from '@/pages/Services.vue';
 import ProjectList from '@/pages/ProjectList.vue';
 import Welcome from '@/pages/Welcome.vue';
 import InfoCircleIcon from '@/components/icons/InfoCircleIcon.vue';

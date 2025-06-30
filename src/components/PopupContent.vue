@@ -18,6 +18,7 @@ defineProps<{
   overflow: auto;
   transition: height .3s;
   height: 600px;
+  scrollbar-gutter: stable;
 
   &_fix-height {
     height: 372px;

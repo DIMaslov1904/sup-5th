@@ -1,8 +1,11 @@
-  function getDomain(url:string): string {
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname;
-    } catch (e) {
-      return url;
-    }
+export const cleanUrl = (url: string) => {
+  return url.replace("https://", "").replace('http://', '');
+};
+
+export const getDomain = (url: string) => { 
+  try {
+    return new URL('https://' + cleanUrl(url)).host;
+  } catch (_) { 
+    return url;
   }
+}
