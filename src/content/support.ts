@@ -166,7 +166,10 @@ const getBtns = async () => {
 }
 
 const updateContainerActions = async (mutationRecords: MutationRecord[]) => { 
-  if ((mutationRecords[1].addedNodes[0] as HTMLDivElement).id !== 'ticket-wrapper') return;
+  try {
+    if ((mutationRecords[1].addedNodes[0] as HTMLDivElement)?.id !== 'ticket-wrapper') return;
+  } catch (error) { // ошибка при долгом выполнении задания
+  }
   getBtns();
 }
 

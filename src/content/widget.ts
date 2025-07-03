@@ -56,7 +56,7 @@ const getFromStorage = async () => {
       return JSON.parse(result[STORAGE_NAME]);
     return null;
   } catch (error) {
-    console.error("Ошибка при получении из хранилища:", error);
+    console.error(new Date().toLocaleString() + "Ошибка при получении из хранилища:", error);
     return null;
   }
 };
@@ -65,7 +65,7 @@ const setToStorage = async (data: Record<string, any>) => {
   try {
     await chrome.storage.local.set({ [STORAGE_NAME]: JSON.stringify(data) });
   } catch (error) {
-    console.error("Ошибка при сохранении в хранилище:", error);
+    console.error(new Date().toLocaleString() + "Ошибка при сохранении в хранилище:", error);
   }
 };
 
@@ -91,11 +91,9 @@ const loginAdminPanelSecond = async () => {
     if (!document.querySelector('[name=USER_LOGIN]')) return
     const inputLogin = document.querySelector('[name=USER_LOGIN]') as HTMLInputElement,
       inputPassword = document.querySelector('[name=USER_PASSWORD]') as HTMLInputElement,
-      inputRemember = document.querySelector('[name=USER_REMEMBER]') as HTMLInputElement,
       inputLoginBtn = document.querySelector('[name=Login]') as HTMLInputElement
     inputLogin.value = currentProject?.login || ''
     inputPassword.value = currentProject?.password || ''
-    inputRemember.checked = true
     inputLoginBtn.click()
   }
 
@@ -103,11 +101,9 @@ const loginAdminPanelSecond = async () => {
     if (!document.querySelector('[name=username]')) return
     const inputLogin = document.querySelector('[name=username]') as HTMLInputElement,
       inputPassword = document.querySelector('[name=password]') as HTMLInputElement,
-      inputRemember = document.querySelector('[name=rememberme]') as HTMLInputElement,
       inputLoginBtn = document.querySelector('[name=login]') as HTMLInputElement
     inputLogin.value = currentProject?.login || ''
     inputPassword.value = currentProject?.password || ''
-    inputRemember.checked = true
     inputLoginBtn.click()
   }
 

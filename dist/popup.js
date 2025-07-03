@@ -7869,7 +7869,8 @@ const geServices = async () => {
 };
 const STORAGE_NAME = "servicesState";
 const defaultState = () => ({
-  personal: "",
+  personal: "docs.google.com/spreadsheets/d/11CrY3JrSZYKQ4UmCvwxDcu4ErUedkhPMqmwX3gnwEcQ/edit?gid=0#gid=0",
+  // TODO: УДАЛИТЬ
   favourites: {},
   list: []
 });
@@ -9050,7 +9051,8 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
               __: [3]
             })) : (openBlock(), createElementBlock("a", {
               key: 1,
-              href: "https://" + unref(servicesStore).state.personal
+              href: "https://" + unref(servicesStore).state.personal,
+              target: "_blank"
             }, "Личная таблица доступов", 8, _hoisted_6$1))
           ]),
           unref(servicesStore).state.favourites.url ? (openBlock(), createElementBlock("li", _hoisted_7$1, [

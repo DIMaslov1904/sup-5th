@@ -9,7 +9,7 @@
 
       <li class="services__item services__item_personal">
         <Button v-if="!servicesStore.state.personal">Заполнить сслыку на личную таблицу доступов</Button>
-        <a v-else :href="'https://'+servicesStore.state.personal">Личная таблица доступов</a>
+        <a v-else :href="'https://'+servicesStore.state.personal" target="_blank">Личная таблица доступов</a>
       </li>
 
       <li v-if="servicesStore.state.favourites.url" class="services__item">

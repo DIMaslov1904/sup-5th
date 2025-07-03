@@ -41,7 +41,7 @@ const getFromStorage = async () => {
       return JSON.parse(result[STORAGE_NAME]);
     return null;
   } catch (error) {
-    console.error("Ошибка при получении из хранилища:", error);
+    console.error((/* @__PURE__ */ new Date()).toLocaleString() + "Ошибка при получении из хранилища:", error);
     return null;
   }
 };
@@ -49,7 +49,7 @@ const setToStorage = async (data) => {
   try {
     await chrome.storage.local.set({ [STORAGE_NAME]: JSON.stringify(data) });
   } catch (error) {
-    console.error("Ошибка при сохранении в хранилище:", error);
+    console.error((/* @__PURE__ */ new Date()).toLocaleString() + "Ошибка при сохранении в хранилище:", error);
   }
 };
 const saveWidgetPosition = async () => {
@@ -68,18 +68,16 @@ const loginAdminPanelSecond = async () => {
   if (!(currentProject == null ? void 0 : currentProject.cms)) return;
   const loginBitrix = async () => {
     if (!document.querySelector("[name=USER_LOGIN]")) return;
-    const inputLogin = document.querySelector("[name=USER_LOGIN]"), inputPassword = document.querySelector("[name=USER_PASSWORD]"), inputRemember = document.querySelector("[name=USER_REMEMBER]"), inputLoginBtn = document.querySelector("[name=Login]");
+    const inputLogin = document.querySelector("[name=USER_LOGIN]"), inputPassword = document.querySelector("[name=USER_PASSWORD]"), inputLoginBtn = document.querySelector("[name=Login]");
     inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
     inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
-    inputRemember.checked = true;
     inputLoginBtn.click();
   };
   const loginModx = async () => {
     if (!document.querySelector("[name=username]")) return;
-    const inputLogin = document.querySelector("[name=username]"), inputPassword = document.querySelector("[name=password]"), inputRemember = document.querySelector("[name=rememberme]"), inputLoginBtn = document.querySelector("[name=login]");
+    const inputLogin = document.querySelector("[name=username]"), inputPassword = document.querySelector("[name=password]"), inputLoginBtn = document.querySelector("[name=login]");
     inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
     inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
-    inputRemember.checked = true;
     inputLoginBtn.click();
   };
   const loginTilda = async () => {

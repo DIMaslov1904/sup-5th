@@ -133,7 +133,11 @@ const getBtns = async () => {
   });
 };
 const updateContainerActions = async (mutationRecords) => {
-  if (mutationRecords[1].addedNodes[0].id !== "ticket-wrapper") return;
+  var _a;
+  try {
+    if (((_a = mutationRecords[1].addedNodes[0]) == null ? void 0 : _a.id) !== "ticket-wrapper") return;
+  } catch (error) {
+  }
   getBtns();
 };
 const startObserverTicketWrapper = async () => {
