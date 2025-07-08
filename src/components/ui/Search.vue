@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-    <Input v-model="model" class="search__input" />
+    <Input v-model="model" class="search__input" placeholder="Поиск..."/>
     <Button v-if="model" @click="model = ''" class="search__reset">
       <CloseIcon/>
     </Button>
