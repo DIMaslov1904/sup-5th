@@ -171,22 +171,6 @@ body {
   position: relative;
   padding: 10px;
 }
-.current-content:has(.current-content__bg) .current-content__header {
-  padding-top: 70px;
-}
-.current-content__bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: -1;
-}
-.current-content__bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(light-dark(rgba(255, 255, 255, 0), rgba(46, 47, 56, 0)), light-dark(#fff, #2e2f38));
-}
 .current-content__header {
   display: grid;
   grid-template-columns: 100px 1fr;

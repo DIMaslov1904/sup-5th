@@ -1,30 +1,28 @@
 <template>
   <li class="project-item" tabindex="0" role="button" @click="$emit('setSite')">
-    <img v-if="project.isImg" class="project-item__bg" :src="getProjectImg(project.url)" width="579" height="120" loading="lazy">
-
     <header class="project-item__header">
       <h2 class="project-item__title">{{ project.name }}</h2>
-      
+
       <Button size="l" :href="'https://' + project.url" target="_blank" @click.stop>
         {{ project.url }}
       </Button>
 
-      <Button size="l" :href="getUrlAdminLogin(project.url, project.urlAdmin, project.cms)" target="_blank" title="Админ. раздел" @click.stop>
-        <GlobalEditIcon/>
+      <Button size="l" :href="getUrlAdminLogin(project.url, project.urlAdmin, project.cms)" target="_blank"
+        title="Админ. раздел" @click.stop>
+        <GlobalEditIcon />
       </Button>
     </header>
   </li>
 </template>
 <script setup lang="ts">
 import { getUrlAdminLogin } from '@/utils/cms-api';
-import {getProjectImg} from '@/utils/getFiles';
 import Button from '@/components/ui/Button.vue';
 import GlobalEditIcon from '@/components/icons/GlobalEditIcon.vue';
 
 defineProps<{
   project: Project
 }>()
-defineEmits < {
+defineEmits<{
   setSite: []
 }>()
 
@@ -43,13 +41,13 @@ defineEmits < {
   overflow: hidden;
   height: 76px;
   cursor: pointer;
- 
+
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: linear-gradient( light-dark(#fff, #2e2f38),  light-dark(#ffffff00, #2e2f3800));
+    background-image: linear-gradient(light-dark(#fff, #2e2f38), light-dark(#ffffff00, #2e2f3800));
     z-index: 1;
   }
 

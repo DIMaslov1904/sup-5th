@@ -7444,7 +7444,6 @@ const removeFromStorage = async () => {
     console.error("Ошибка при удалении из хранилища:", error);
   }
 };
-const URL_IMG_PROJECT = "/assets/sites/{}.jpg";
 const URL_IMG_CMS = "/assets/icons/{}.svg";
 const URL_ALL_PROJECTS = "https://script.google.com/macros/s/AKfycbxmXBEcD3U0-e9nTwJ02EkAKXLsxTYkkYt6t9Wni6m_Fgr7OaWnTc_WEPLu2Up1M8w/exec";
 const GET_PARM_GET_SERVICES = "?get=services";
@@ -7617,8 +7616,7 @@ const defaultStateOne = () => ({
   git: "",
   figma: "",
   addDocument: "",
-  updateAt: (/* @__PURE__ */ new Date()).getTime(),
-  isImg: false
+  updateAt: (/* @__PURE__ */ new Date()).getTime()
 });
 const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
   const state = ref(defaultState$2());
@@ -7630,21 +7628,9 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
     });
     saveToStorage();
   };
-  const checkImg = async (urlProject) => {
-    try {
-      return (await fetch(URL_IMG_PROJECT.replace("{}", urlProject), {
-        method: "HEAD"
-      })).ok;
-    } catch (_) {
-      return false;
-    }
-  };
   const add = async (data) => {
     if (!data.url) return;
-    state.value.projects = [
-      ...state.value.projects,
-      { ...data, isImg: await checkImg(data.url) }
-    ];
+    state.value.projects = [...state.value.projects, { ...data }];
   };
   const remove2 = (url) => {
     state.value.projects = state.value.projects.filter(
@@ -7665,18 +7651,6 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
       return item;
     });
     return isUpdate;
-  };
-  const updateIsImg = async () => {
-    const noticeStore = useNoticeStore();
-    let newImg = 0;
-    state.value.isLoadingIMG = true;
-    state.value.projects = state.value.projects.map(async (item) => {
-      const isImg = await checkImg(item.url);
-      if (!item.isImg && isImg) newImg++;
-      return { ...item, isImg };
-    });
-    state.value.isLoadingIMG = false;
-    noticeStore.add("success", `Найдено новых изображений: ${newImg}шт`, 10);
   };
   const update = async () => {
     const noticeStore = useNoticeStore();
@@ -7808,7 +7782,6 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
     edit,
     update,
     remove: remove2,
-    updateIsImg,
     updateAccess,
     updateAll,
     loadFromStorage
@@ -8200,7 +8173,6 @@ const getIcon = (name) => {
   }
   return chrome.runtime.getURL(URL_IMG_CMS.replace("{}", nameFile));
 };
-const getProjectImg = (name) => chrome.runtime.getURL(URL_IMG_PROJECT.replace("{}", name));
 const cmsList = {
   UMI: "admin/content/sitetree/",
   EzPro: "ezpro/",
@@ -8519,18 +8491,13 @@ password: ${props.project.password}
   }
 });
 const _hoisted_1$l = { class: "current-content" };
-const _hoisted_2$a = {
-  key: 0,
-  class: "current-content__bg"
-};
-const _hoisted_3$9 = ["src"];
-const _hoisted_4$3 = { class: "current-content__header" };
-const _hoisted_5$2 = ["href", "title"];
-const _hoisted_6$2 = ["src"];
+const _hoisted_2$a = { class: "current-content__header" };
+const _hoisted_3$8 = ["href", "title"];
+const _hoisted_4$3 = ["src"];
+const _hoisted_5$2 = ["src"];
+const _hoisted_6$2 = ["href"];
 const _hoisted_7$2 = ["src"];
-const _hoisted_8$1 = ["href"];
-const _hoisted_9 = ["src"];
-const _hoisted_10 = ["src"];
+const _hoisted_8$1 = ["src"];
 const _sfc_main$q = /* @__PURE__ */ defineComponent({
   __name: "CurrentContent",
   props: {
@@ -8540,14 +8507,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
     const pStore = useProjectsStore();
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", _hoisted_1$l, [
-        _ctx.project.isImg ? (openBlock(), createElementBlock("div", _hoisted_2$a, [
-          createBaseVNode("img", {
-            src: unref(getProjectImg)(_ctx.project.url),
-            width: "660",
-            height: "120"
-          }, null, 8, _hoisted_3$9)
-        ])) : createCommentVNode("", true),
-        createBaseVNode("header", _hoisted_4$3, [
+        createBaseVNode("header", _hoisted_2$a, [
           createBaseVNode("a", {
             href: unref(getUrlAdminLogin)(_ctx.project.url, _ctx.project.urlAdmin, _ctx.project.cms),
             target: "_blank",
@@ -8557,21 +8517,21 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
             _ctx.project.cms ? (openBlock(), createElementBlock("img", {
               key: 0,
               src: unref(getIcon)(_ctx.project.cms === "Своя" ? "cms" : _ctx.project.cms)
-            }, null, 8, _hoisted_6$2)) : (openBlock(), createElementBlock("img", {
+            }, null, 8, _hoisted_4$3)) : (openBlock(), createElementBlock("img", {
               key: 1,
               src: unref(getIcon)("hosting")
-            }, null, 8, _hoisted_7$2))
-          ], 8, _hoisted_5$2),
+            }, null, 8, _hoisted_5$2))
+          ], 8, _hoisted_3$8),
           createBaseVNode("a", {
             class: "current-content__name",
             href: "https://" + _ctx.project.url,
             target: "_blank"
           }, [
             createBaseVNode("h1", null, toDisplayString(_ctx.project.name) + " (" + toDisplayString(_ctx.project.url) + ")", 1)
-          ], 8, _hoisted_8$1)
+          ], 8, _hoisted_6$2)
         ]),
         _ctx.project.git ? (openBlock(), createBlock(_sfc_main$z, {
-          key: 1,
+          key: 0,
           size: "l",
           href: `https://${_ctx.project.git}`,
           target: "_blank"
@@ -8579,12 +8539,12 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
           default: withCtx(() => [
             createBaseVNode("img", {
               src: unref(getIcon)("gitlab")
-            }, null, 8, _hoisted_9)
+            }, null, 8, _hoisted_7$2)
           ]),
           _: 1
         }, 8, ["href"])) : createCommentVNode("", true),
         _ctx.project.figma ? (openBlock(), createBlock(_sfc_main$z, {
-          key: 2,
+          key: 1,
           size: "l",
           href: `https://${_ctx.project.figma}`,
           target: "_blank"
@@ -8592,12 +8552,12 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
           default: withCtx(() => [
             createBaseVNode("img", {
               src: unref(getIcon)("figma")
-            }, null, 8, _hoisted_10)
+            }, null, 8, _hoisted_8$1)
           ]),
           _: 1
         }, 8, ["href"])) : createCommentVNode("", true),
         _ctx.project.manual ? (openBlock(), createBlock(_sfc_main$z, {
-          key: 3,
+          key: 2,
           size: "l",
           href: `https://${_ctx.project.manual}`,
           target: "_blank"
@@ -8610,7 +8570,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
           __: [1]
         }, 8, ["href"])) : createCommentVNode("", true),
         _ctx.project.addDocument ? (openBlock(), createBlock(_sfc_main$z, {
-          key: 4,
+          key: 3,
           size: "l",
           href: `https://${_ctx.project.addDocument}`,
           target: "_blank"
@@ -8622,16 +8582,16 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
           __: [2]
         }, 8, ["href"])) : createCommentVNode("", true),
         _ctx.project.login ? (openBlock(), createBlock(_sfc_main$t, {
-          key: 5,
+          key: 4,
           text: _ctx.project.login
         }, null, 8, ["text"])) : createCommentVNode("", true),
         _ctx.project.password ? (openBlock(), createBlock(_sfc_main$t, {
-          key: 6,
+          key: 5,
           text: _ctx.project.password,
           hide: ""
         }, null, 8, ["text"])) : createCommentVNode("", true),
         _ctx.project.login ? (openBlock(), createBlock(_sfc_main$r, {
-          key: 7,
+          key: 6,
           project: _ctx.project
         }, null, 8, ["project"])) : createCommentVNode("", true),
         createVNode(_sfc_main$z, {
@@ -8901,7 +8861,7 @@ const _hoisted_2$9 = {
   "stroke-linecap": "round",
   "stroke-linejoin": "round"
 };
-const _hoisted_3$8 = {
+const _hoisted_3$7 = {
   key: 1,
   class: "remove",
   opacity: "0.4",
@@ -8937,7 +8897,7 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
           "stroke-linejoin": "round"
         }, null, -1)),
         _ctx.type === "added" || _ctx.type === "all" ? (openBlock(), createElementBlock("path", _hoisted_2$9)) : createCommentVNode("", true),
-        _ctx.type === "remove" || _ctx.type === "all" ? (openBlock(), createElementBlock("path", _hoisted_3$8)) : createCommentVNode("", true),
+        _ctx.type === "remove" || _ctx.type === "all" ? (openBlock(), createElementBlock("path", _hoisted_3$7)) : createCommentVNode("", true),
         _ctx.type === "add" || _ctx.type === "all" ? (openBlock(), createElementBlock("path", _hoisted_4$2)) : createCommentVNode("", true)
       ]);
     };
@@ -9162,7 +9122,7 @@ const _hoisted_2$7 = {
   key: 1,
   class: "services"
 };
-const _hoisted_3$7 = { class: "services__header" };
+const _hoisted_3$6 = { class: "services__header" };
 const _hoisted_4$1 = { class: "services__list" };
 const _hoisted_5$1 = { class: "services__item services__item_personal" };
 const _hoisted_6$1 = ["href"];
@@ -9208,7 +9168,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock(Fragment, null, [
         unref(servicesStore).isLoading ? (openBlock(), createElementBlock("div", _hoisted_1$d, "Загрузка")) : (openBlock(), createElementBlock("div", _hoisted_2$7, [
-          createBaseVNode("header", _hoisted_3$7, [
+          createBaseVNode("header", _hoisted_3$6, [
             createVNode(_sfc_main$k, {
               modelValue: searchComputed.value,
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => searchComputed.value = $event)
@@ -9306,9 +9266,8 @@ function _sfc_render$4(_ctx, _cache) {
   ]));
 }
 const GlobalEditIcon = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$4]]);
-const _hoisted_1$b = ["src"];
-const _hoisted_2$6 = { class: "project-item__header" };
-const _hoisted_3$6 = { class: "project-item__title" };
+const _hoisted_1$b = { class: "project-item__header" };
+const _hoisted_2$6 = { class: "project-item__title" };
 const _sfc_main$e = /* @__PURE__ */ defineComponent({
   __name: "ProjectItem",
   props: {
@@ -9323,16 +9282,8 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
         role: "button",
         onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("setSite"))
       }, [
-        _ctx.project.isImg ? (openBlock(), createElementBlock("img", {
-          key: 0,
-          class: "project-item__bg",
-          src: unref(getProjectImg)(_ctx.project.url),
-          width: "579",
-          height: "120",
-          loading: "lazy"
-        }, null, 8, _hoisted_1$b)) : createCommentVNode("", true),
-        createBaseVNode("header", _hoisted_2$6, [
-          createBaseVNode("h2", _hoisted_3$6, toDisplayString(_ctx.project.name), 1),
+        createBaseVNode("header", _hoisted_1$b, [
+          createBaseVNode("h2", _hoisted_2$6, toDisplayString(_ctx.project.name), 1),
           createVNode(_sfc_main$z, {
             size: "l",
             href: "https://" + _ctx.project.url,

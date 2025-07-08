@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { setToStorage, getFromStorage } from "@/utils/chrome-api";
 import { getProjects, getAccess } from "@/utils/projects-api";
-import { URL_IMG_PROJECT } from "@/globVars";
 import { useNoticeStore } from "./notice";
 import { cleanUrl, getDomain } from "@/utils/url";
 
@@ -27,7 +26,6 @@ const defaultStateOne = (): Project => ({
   figma: "",
   addDocument: "",
   updateAt: new Date().getTime(),
-  isImg: false,
 });
 export const useProjectsStore = defineStore(STORAGE_NAME, () => {
   const state = ref<any>(defaultState());
@@ -41,24 +39,9 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     saveToStorage();
   };
 
-  const checkImg = async (urlProject: string) => {
-    try {
-      return (
-        await fetch(URL_IMG_PROJECT.replace("{}", urlProject), {
-          method: "HEAD",
-        })
-      ).ok;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const add = async (data: Project) => {
     if (!data.url) return;
-    state.value.projects = [
-      ...state.value.projects,
-      { ...data, isImg: await checkImg(data.url) },
-    ];
+    state.value.projects = [...state.value.projects, { ...data }];
   };
 
   const remove = (url: string) => {
@@ -82,20 +65,6 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
       return item;
     });
     return isUpdate;
-  };
-
-  const updateIsImg = async () => {
-    const noticeStore = useNoticeStore();
-    let newImg = 0;
-
-    state.value.isLoadingIMG = true;
-    state.value.projects = state.value.projects.map(async (item: any) => {
-      const isImg = await checkImg(item.url);
-      if (!item.isImg && isImg) newImg++;
-      return { ...item, isImg };
-    });
-    state.value.isLoadingIMG = false;
-    noticeStore.add("success", `Найдено новых изображений: ${newImg}шт`, 10);
   };
 
   const update = async () => {
@@ -264,7 +233,6 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     edit,
     update,
     remove,
-    updateIsImg,
     updateAccess,
     updateAll,
     loadFromStorage,
