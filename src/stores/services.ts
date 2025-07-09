@@ -4,12 +4,12 @@ import { setToStorage, getFromStorage } from "@/utils/chrome-api";
 import { geServices } from "@/utils/services-api";
 import { useNoticeStore } from "./notice";
 import { cleanUrl } from "@/utils/url";
-import debounce from '@/utils/debounce';
+import debounce from "@/utils/debounce";
 
 const STORAGE_NAME = "servicesState";
 
 const defaultState = (): ServicesState => ({
-  personal: "docs.google.com/spreadsheets/d/11CrY3JrSZYKQ4UmCvwxDcu4ErUedkhPMqmwX3gnwEcQ/edit?gid=0#gid=0", // TODO: УДАЛИТЬ
+  personal: "",
   favourites: {},
   list: [],
 });
@@ -26,11 +26,10 @@ export const useServicesStore = defineStore(STORAGE_NAME, () => {
     saveToStorage();
   };
 
-
-  const changePersonal = (val: string) => { 
+  const changePersonal = (val: string) => {
     state.value.personal = val;
-    debounceSaveToStorage()
-  }
+    debounceSaveToStorage();
+  };
 
   const removeAll = () => {
     state.value.list = [];
@@ -65,7 +64,7 @@ export const useServicesStore = defineStore(STORAGE_NAME, () => {
 
   const saveToStorage = () => setToStorage(STORAGE_NAME, state.value);
 
-  const debounceSaveToStorage = debounce(saveToStorage, 1000)
+  const debounceSaveToStorage = debounce(saveToStorage, 1000);
 
   const loadFromStorage = async () => {
     const result = await getFromStorage(STORAGE_NAME);

@@ -1,8 +1,11 @@
 <template>
   <div class="services-item">
-    <Button size="l" class="services-item__favorite" :class="{'services-item__favorite_added': ifFavorite}" @click.stop="$emit('setFavorites')"><ArchiveTickIcon class="services-item__favorite-icon" type="all"/></Button>
+    <Button size="l" class="services-item__favorite" :class="{ 'services-item__favorite_added': ifFavorite }"
+      @click.stop="$emit('setFavorites')">
+      <ArchiveTickIcon class="services-item__favorite-icon" type="all" />
+    </Button>
     <p>{{ services.description }}</p>
-    <a class="services-item__link" :href="'https://'+services.url" target="_blank">{{ services.name }}</a>
+    <a class="services-item__link" :href="'https://' + services.url" target="_blank">{{ services.name }}</a>
   </div>
 </template>
 
@@ -14,7 +17,7 @@ defineProps<{
   services: ServicesItem
   ifFavorite: boolean
 }>()
-defineEmits < {
+defineEmits<{
   setFavorites: []
 }>()
 </script>
@@ -46,15 +49,17 @@ defineEmits < {
 
   &:hover {
     &:not(.services-item__favorite_added) {
-      .add{
+      .add {
         opacity: 1;
       }
     }
+
     &.services-item__favorite_added {
       .added {
         opacity: 0;
       }
-      .remove{
+
+      .remove {
         opacity: 1;
       }
     }
@@ -62,14 +67,17 @@ defineEmits < {
 }
 
 .services-item__favorite-icon {
-  .added, .remove, .add {
+
+  .added,
+  .remove,
+  .add {
     opacity: 0;
   }
 }
 
 .services-item__favorite_added {
   .services-item__favorite-icon {
-    .added{
+    .added {
       opacity: 1;
     }
   }
@@ -80,7 +88,7 @@ defineEmits < {
   color: currentColor;
   text-decoration: none;
   font-weight: bold;
-  
+
   &::after {
     content: '';
     position: absolute;

@@ -1,8 +1,8 @@
 <template>
   <div class="search">
-    <Input v-model="model" class="search__input" placeholder="Поиск..."/>
+    <Input v-model="model" class="search__input" placeholder="Поиск..." />
     <Button v-if="model" @click="model = ''" class="search__reset">
-      <CloseIcon/>
+      <CloseIcon />
     </Button>
   </div>
 </template>
@@ -18,10 +18,12 @@ const model = defineModel()
 <style lang="scss">
 .search {
   position: relative;
+
   &__input {
     width: 100%;
     padding-right: 32px;
   }
+
   &__reset {
     position: absolute;
     right: 10px;

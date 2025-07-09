@@ -1,15 +1,13 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { setToStorage, getFromStorage } from "@/utils/chrome-api";
-import { URL_ALL_PROJECTS } from "@/globVars";
 
 const STORAGE_NAME = "mainState";
 
 const defaultState = () => ({
   page: "currentSite",
-  apiUrl: URL_ALL_PROJECTS,
-  apiAccessUrl:
-    "https://script.google.com/macros/s/AKfycbxhWA-PJLQT6sswIlwg_0wjXWhy9cuJeYa90yhnXaU1sHY6_Yyt4qmspU1YBzdBaU3B/exec", //TODO: удалить
+  apiUrl: "",
+  apiAccessUrl: "",
   hiddenAdmButton: false,
 });
 

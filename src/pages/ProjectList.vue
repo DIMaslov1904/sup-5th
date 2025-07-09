@@ -9,9 +9,11 @@
       <Search v-model="searchComputed" />
       <Button @click="projectsStore.updateAccess">Обновить доступы</Button>
     </header>
-    <ul class="project-list" >
-      <ProjectItem v-for="project in getListSetFilters()" :key="project.url" :project="project" @setSite="setSite(project)" />
-    </ul>  </div>
+    <ul class="project-list">
+      <ProjectItem v-for="project in getListSetFilters()" :key="project.url" :project="project"
+        @setSite="setSite(project)" />
+    </ul>
+  </div>
   <EmptyProjects v-else />
 </template>
 
@@ -32,13 +34,13 @@ const search = ref('')
 const searchRU = ref('')
 const searchEN = ref('')
 
-const emits = defineEmits< {
+const emits = defineEmits<{
   setIsFixHeight: [boolean]
 }>()
 
 onUnmounted(() => { emits('setIsFixHeight', true) })
 
-const backward = () => { 
+const backward = () => {
   emits('setIsFixHeight', false)
   selectProjectState.removeProject()
 }
@@ -48,7 +50,7 @@ const setSite = (project: Project) => {
   selectProjectState.setProject(project)
 }
 
-const getListSetFilters = () => { 
+const getListSetFilters = () => {
   const res = (isAccess || search ? projectsStore.state.projects.filter(filterProjects) : projectsStore.state.projects)
   if (!('url' in selectProjectState.state)) emits('setIsFixHeight', res.length <= 3)
   return res
@@ -57,27 +59,27 @@ const getListSetFilters = () => {
 const selectProjectState = useSelectProjectStore()
 
 const searchComputed = computed({
-  get: () =>  search.value,
+  get: () => search.value,
   set: (newValue: string) => {
     newValue = newValue.toLowerCase()
     searchRU.value = switcher(newValue)
-    searchEN.value = searchRU.value === newValue ? switcher(newValue, { type: 'rueng'}) : ''
+    searchEN.value = searchRU.value === newValue ? switcher(newValue, { type: 'rueng' }) : ''
     search.value = newValue
   }
 });
 
 
-const searchFilter = (project: Project) => { 
+const searchFilter = (project: Project) => {
   if (!search.value) return true
   const name = project.name.toLowerCase()
   const url = project.url.toLowerCase()
-  if (searchEN.value) return  name.includes(search.value) || url.includes(search.value) || name.includes(searchEN.value) || url.includes(searchEN.value)
+  if (searchEN.value) return name.includes(search.value) || url.includes(search.value) || name.includes(searchEN.value) || url.includes(searchEN.value)
   return name.includes(search.value) || url.includes(search.value) || name.includes(searchRU.value)
 }
-const filterProjects = (project: Project) => { 
+const filterProjects = (project: Project) => {
   if (isAccess.value) {
     if (search.value) return searchFilter(project) && project.login !== ''
-    return project.login !== '' 
+    return project.login !== ''
   }
   if (search.value) return searchFilter(project)
   return true
@@ -97,6 +99,7 @@ const filterProjects = (project: Project) => {
   background: var(--color-bg-body);
   padding: 5px;
 }
+
 .project-list {
   list-style: none;
   padding: 0;

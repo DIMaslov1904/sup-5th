@@ -1,12 +1,12 @@
 <template>
-  <span class="copy-text" :class="{'copy-text_hide': hide, 'copy-text_inline': inline}">
+  <span class="copy-text" :class="{ 'copy-text_hide': hide, 'copy-text_inline': inline }">
     {{ isHide ? '******' : text }}
     <Button v-if="hide" @click="isHide = !isHide" class="copy-text__hide">
-      <EyeIcon v-if="isHide"/>
-      <EyeSlashIcon v-else/>
+      <EyeIcon v-if="isHide" />
+      <EyeSlashIcon v-else />
     </Button>
     <Button @click="copy" :disabledd="isCopy" class="copy-text__copy">
-      <ClipboardTickIcon v-if="isCopy"/>
+      <ClipboardTickIcon v-if="isCopy" />
       <ClipboardTextIcon v-else />
     </Button>
   </span>
@@ -29,7 +29,7 @@ const props = defineProps<{
 const isCopy = ref(false)
 const isHide = ref(props.hide)
 
-  const copy = () => {
+const copy = () => {
   navigator.clipboard.writeText(props.text).then(() => {
     isCopy.value = true
     setTimeout(() => isCopy.value = false, 2000)
@@ -68,9 +68,11 @@ const isHide = ref(props.hide)
   top: 50%;
   transform: translateY(-50%);
 }
+
 .copy-text__copy {
   right: 0;
 }
+
 .copy-text__hide {
   right: 36px;
 }

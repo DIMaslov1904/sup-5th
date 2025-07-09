@@ -17,7 +17,7 @@ const getUrlAdminLogin = (urlAdmin: string, cms: CMSName) => {
       return "#";
     case "Своя":
     case "WordPress":
-      return 'https://' + urlAdmin
+      return "https://" + urlAdmin;
     case "Tilda":
       return "https://tilda.ru/login/";
     default:
@@ -45,7 +45,7 @@ const STORAGE_NAME = "projectsState";
 
 const getProjectImg = (name: string) => {
   let nameFile =
-    name === "Своя" ? "cms" : (name === "Нет" ? "hosting" : name.toLowerCase());
+    name === "Своя" ? "cms" : name === "Нет" ? "hosting" : name.toLowerCase();
   return chrome.runtime.getURL(`/assets/icons/${nameFile}.svg`);
 };
 
@@ -56,7 +56,10 @@ const getFromStorage = async () => {
       return JSON.parse(result[STORAGE_NAME]);
     return null;
   } catch (error) {
-    console.error(new Date().toLocaleString() + "Ошибка при получении из хранилища:", error);
+    console.error(
+      new Date().toLocaleString() + "Ошибка при получении из хранилища:",
+      error
+    );
     return null;
   }
 };
@@ -65,7 +68,10 @@ const setToStorage = async (data: Record<string, any>) => {
   try {
     await chrome.storage.local.set({ [STORAGE_NAME]: JSON.stringify(data) });
   } catch (error) {
-    console.error(new Date().toLocaleString() + "Ошибка при сохранении в хранилище:", error);
+    console.error(
+      new Date().toLocaleString() + "Ошибка при сохранении в хранилище:",
+      error
+    );
   }
 };
 
@@ -84,38 +90,54 @@ const saveWidgetPosition = async (): Promise<void> => {
   await setToStorage(storage);
 };
 
-const loginAdminPanelSecond = async () => { 
+const loginAdminPanelSecond = async () => {
   if (!currentProject?.cms) return;
 
-  const loginBitrix = async () => { 
-    if (!document.querySelector('[name=USER_LOGIN]')) return
-    const inputLogin = document.querySelector('[name=USER_LOGIN]') as HTMLInputElement,
-      inputPassword = document.querySelector('[name=USER_PASSWORD]') as HTMLInputElement,
-      inputLoginBtn = document.querySelector('[name=Login]') as HTMLInputElement
-    inputLogin.value = currentProject?.login || ''
-    inputPassword.value = currentProject?.password || ''
-    inputLoginBtn.click()
-  }
+  const loginBitrix = async () => {
+    if (!document.querySelector("[name=USER_LOGIN]")) return;
+    const inputLogin = document.querySelector(
+        "[name=USER_LOGIN]"
+      ) as HTMLInputElement,
+      inputPassword = document.querySelector(
+        "[name=USER_PASSWORD]"
+      ) as HTMLInputElement,
+      inputLoginBtn = document.querySelector(
+        "[name=Login]"
+      ) as HTMLInputElement;
+    inputLogin.value = currentProject?.login || "";
+    inputPassword.value = currentProject?.password || "";
+    inputLoginBtn.click();
+  };
 
-  const loginModx = async () => { 
-    if (!document.querySelector('[name=username]')) return
-    const inputLogin = document.querySelector('[name=username]') as HTMLInputElement,
-      inputPassword = document.querySelector('[name=password]') as HTMLInputElement,
-      inputLoginBtn = document.querySelector('[name=login]') as HTMLInputElement
-    inputLogin.value = currentProject?.login || ''
-    inputPassword.value = currentProject?.password || ''
-    inputLoginBtn.click()
-  }
+  const loginModx = async () => {
+    if (!document.querySelector("[name=username]")) return;
+    const inputLogin = document.querySelector(
+        "[name=username]"
+      ) as HTMLInputElement,
+      inputPassword = document.querySelector(
+        "[name=password]"
+      ) as HTMLInputElement,
+      inputLoginBtn = document.querySelector(
+        "[name=login]"
+      ) as HTMLInputElement;
+    inputLogin.value = currentProject?.login || "";
+    inputPassword.value = currentProject?.password || "";
+    inputLoginBtn.click();
+  };
 
-  const loginTilda = async () => { 
-    if (!document.querySelector('[name=email]')) return
-    const inputLogin = document.querySelector('[name=email]') as HTMLInputElement,
-      inputPassword = document.querySelector('[name=password]') as HTMLInputElement,
-      inputLoginBtn = document.querySelector('#send') as HTMLInputElement
-    inputLogin.value = currentProject?.login || ''
-    inputPassword.value = currentProject?.password || ''
-    if (!document.querySelector('#recaptcha_div')) inputLoginBtn.click()
-  }
+  const loginTilda = async () => {
+    if (!document.querySelector("[name=email]")) return;
+    const inputLogin = document.querySelector(
+        "[name=email]"
+      ) as HTMLInputElement,
+      inputPassword = document.querySelector(
+        "[name=password]"
+      ) as HTMLInputElement,
+      inputLoginBtn = document.querySelector("#send") as HTMLInputElement;
+    inputLogin.value = currentProject?.login || "";
+    inputPassword.value = currentProject?.password || "";
+    if (!document.querySelector("#recaptcha_div")) inputLoginBtn.click();
+  };
 
   switch (currentProject?.cms) {
     case "Bitrix":
@@ -124,24 +146,28 @@ const loginAdminPanelSecond = async () => {
     case "MODX":
       await loginModx();
       break;
-    case 'Tilda':
+    case "Tilda":
       await loginTilda();
   }
-  sessionStorage.removeItem('login')
-}
+  sessionStorage.removeItem("login");
+};
 
 const loginAdminPanel = async (target: string) => {
-  if (!currentProject?.cms) return window.open(currentProject?.urlAdmin, target);
+  if (!currentProject?.cms)
+    return window.open(currentProject?.urlAdmin, target);
 
   const loginUmi = async () => {
-    const urlAdmin = '/admin/content/sitetree/'
-    const urlLoginAdmin = '/admin/users/login_do/'
+    const urlAdmin = "/admin/content/sitetree/";
+    const urlLoginAdmin = "/admin/users/login_do/";
 
     try {
-      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: 'error' })
+      await fetch(urlAdmin, {
+        method: "HEAD",
+        credentials: "include",
+        redirect: "error",
+      });
       return window.open(urlAdmin, target);
-    } catch (er) { }
-    
+    } catch (er) {}
 
     const formData = new FormData();
     Object.entries({
@@ -154,61 +180,69 @@ const loginAdminPanel = async (target: string) => {
     await fetch(urlLoginAdmin, {
       method: "POST",
       body: formData,
-      credentials: "include"
-    })
-    
+      credentials: "include",
+    });
+
     window.open(urlAdmin, target);
-  }
+  };
 
   const loginBitrix = async () => {
-    const urlLoginAdmin = '/bitrix/admin/#authorize'
-    sessionStorage.setItem('login', '1')
+    const urlLoginAdmin = "/bitrix/admin/#authorize";
+    sessionStorage.setItem("login", "1");
     window.open(urlLoginAdmin, target);
   };
 
-  const loginModx = async () => { 
-    const urlLoginAdmin = '/manager/'
-    sessionStorage.setItem('login', '1')
+  const loginModx = async () => {
+    const urlLoginAdmin = "/manager/";
+    sessionStorage.setItem("login", "1");
     window.open(urlLoginAdmin, target);
-  }
+  };
 
-  const loginAbo = async () => { 
-    const urlAdmin = '/admin.php'
-    const urlLoginAdmin = '/login.php'
+  const loginAbo = async () => {
+    const urlAdmin = "/admin.php";
+    const urlLoginAdmin = "/login.php";
 
     try {
-      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: 'error' })
+      await fetch(urlAdmin, {
+        method: "HEAD",
+        credentials: "include",
+        redirect: "error",
+      });
       return window.open(urlAdmin, target);
-    } catch (er) { }
+    } catch (er) {}
 
     const formData = new FormData();
     Object.entries({
       email: currentProject?.login,
       password: currentProject?.password,
-      validate: true
+      validate: true,
     }).forEach(([key, value]) => formData.append(key, value?.toString() || ""));
 
     await fetch(urlLoginAdmin, {
       method: "POST",
       body: formData,
-      credentials: "include"
-    })
-    
-    window.open(urlAdmin, target);
-  }
+      credentials: "include",
+    });
 
-  const loginTilda = async () => { 
-    const urlAdmin = 'https://tilda.ru/projects/'
-    const urlLoginAdmin = 'https://tilda.ru/login/'
+    window.open(urlAdmin, target);
+  };
+
+  const loginTilda = async () => {
+    const urlAdmin = "https://tilda.ru/projects/";
+    const urlLoginAdmin = "https://tilda.ru/login/";
 
     try {
-      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: 'error' })
+      await fetch(urlAdmin, {
+        method: "HEAD",
+        credentials: "include",
+        redirect: "error",
+      });
       return window.open(urlAdmin, target);
-    } catch (er) { }
+    } catch (er) {}
 
-    chrome.storage.local.set({ 'tildaLogin': JSON.stringify(currentProject) });
+    chrome.storage.local.set({ tildaLogin: JSON.stringify(currentProject) });
     window.open(urlLoginAdmin, target);
-  }
+  };
 
   switch (currentProject?.cms) {
     case "UMI":
@@ -221,22 +255,30 @@ const loginAdminPanel = async (target: string) => {
       return await loginAbo();
     case "Tilda":
       return await loginTilda();
-    default: window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms), target);
+    default:
+      window.open(
+        getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms),
+        target
+      );
   }
 };
 
 const checkAdmin = async () => {
-  if (!currentProject || !window.location.href.includes(currentProject?.urlAdmin)) return;
+  if (
+    !currentProject ||
+    !window.location.href.includes(currentProject?.urlAdmin)
+  )
+    return;
   isAdminPage = true;
-  if (sessionStorage.getItem('login')) loginAdminPanelSecond() 
+  if (sessionStorage.getItem("login")) loginAdminPanelSecond();
 };
 
 const checkCurrentProject = async (): Promise<void> => {
-  if (window.location.href.includes('tilda.ru/login')) { 
-    const result = await chrome.storage.local.get(['tildaLogin']);
-    if (result['tildaLogin'] !== undefined) {
-      currentProject = JSON.parse(result['tildaLogin']);
-      loginAdminPanelSecond()
+  if (window.location.href.includes("tilda.ru/login")) {
+    const result = await chrome.storage.local.get(["tildaLogin"]);
+    if (result["tildaLogin"] !== undefined) {
+      currentProject = JSON.parse(result["tildaLogin"]);
+      loginAdminPanelSecond();
     }
   }
   storage = (await getFromStorage()) as ProjectStorage;
@@ -251,8 +293,8 @@ const checkCurrentProject = async (): Promise<void> => {
         : false
     ) || null;
   if (currentProject) {
-    checkAdmin()
-    createFloatingWidget()
+    checkAdmin();
+    createFloatingWidget();
   }
 };
 
@@ -303,7 +345,8 @@ const createFloatingWidget = async (): Promise<void> => {
     const btnAdm = document.createElement("button");
     btnAdm.className = "sup-5th-btn";
     btnAdm.title = isAdminPage ? "Перейти на сайт" : "Перейти в админку";
-    btnAdm.innerHTML = isAdminPage ? `
+    btnAdm.innerHTML = isAdminPage
+      ? `
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="https://www.w3.org/2000/svg">
       <path d="M16 29.3333C23.3637 29.3333 29.3333 23.3637 29.3333 16C29.3333 8.63619 23.3637 2.66666 16 2.66666C8.63616 2.66666 2.66663 8.63619 2.66663 16C2.66663 23.3637 8.63616 29.3333 16 29.3333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       <g opacity="0.4">
@@ -313,7 +356,8 @@ const createFloatingWidget = async (): Promise<void> => {
       <path d="M4 12.0001C11.7867 9.40014 20.2133 9.40014 28 12.0001" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
     </svg>
-    ` : `
+    `
+      : `
     <svg xmlns="https://www.w3.org/2000/svg" width="0" viewBox="0 0 32 32" fill="none">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M29.333 16C29.333 8.64 23.36 2.667 16 2.667S2.667 8.64 2.667 16 8.64 29.333 16 29.333"/>
       <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" opacity=".4">
@@ -326,8 +370,8 @@ const createFloatingWidget = async (): Promise<void> => {
     `;
     btnAdm.addEventListener("mousedown", (e) => {
       if (!currentProject || !(e.buttons === 1 || e.buttons === 4)) return;
-      const target = e.buttons === 1 ? "_self" : "_blank"
-      isAdminPage ? window.open('/', target) : loginAdminPanel(target);
+      const target = e.buttons === 1 ? "_self" : "_blank";
+      isAdminPage ? window.open("/", target) : loginAdminPanel(target);
     });
     floatingWidget.appendChild(btnAdm);
   }

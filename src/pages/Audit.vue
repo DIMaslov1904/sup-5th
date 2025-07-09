@@ -1,10 +1,9 @@
-
 <template>
   <h1 class="audit__title">Аудит сайта</h1>
-  
+
   <Button href="https://loading.express/" target="_blank">LOADING.express</Button>
-  <Button :href="'https://pagespeed.web.dev/analysis?url='+ currentTabUrl" target="_blank">PageSpeed Insights</Button>
-  <Button :href="'https://validator.w3.org/nu/?doc='+ currentTabUrl" target="_blank">валидатор HTML</Button>
+  <Button :href="'https://pagespeed.web.dev/analysis?url=' + currentTabUrl" target="_blank">PageSpeed Insights</Button>
+  <Button :href="'https://validator.w3.org/nu/?doc=' + currentTabUrl" target="_blank">валидатор HTML</Button>
 
 </template>
 

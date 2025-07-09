@@ -4,14 +4,11 @@
   </div>
 </template>
 
-<<script setup lang="ts">
-defineProps<{
-  fixHeight?: boolean
-}>()
+<script setup lang="ts">
+defineProps<{ fixHeight?: boolean }>()
 </script>
 
 <style lang="scss">
-
 .popup-content {
   width: 604px;
   border-radius: 8px;

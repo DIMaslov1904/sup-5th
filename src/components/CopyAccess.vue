@@ -1,8 +1,8 @@
 <template>
   <Button size="l" v-if="project.login" @click="copyAccess" title="Копировать доступ для отправки">
     Доступ
-    <ClipboardTickIcon  v-if="isCopy"/>
-    <ClipboardKeyIcon v-else/>
+    <ClipboardTickIcon v-if="isCopy" />
+    <ClipboardKeyIcon v-else />
   </Button>
 </template>
 

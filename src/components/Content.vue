@@ -9,7 +9,8 @@
   font-weight: 500;
   line-height: 1.6;
 
-  b, strong {
+  b,
+  strong {
     font-weight: bold;
   }
 
@@ -18,7 +19,12 @@
   }
 
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 800;
     margin-top: 24px;
     margin-bottom: 16px;
@@ -32,24 +38,34 @@
     font-size: 18px;
   }
 
-  h3, h4, h5, h6 {
+  h3,
+  h4,
+  h5,
+  h6 {
     font-size: 16px;
   }
 
   li:has(> *:first-child:is(h1, h2, h3, h4, h5, h6)) {
     --counter-weight: 800;
   }
+
   li:has(> *:first-child:is(h1)) {
     --counter-size: 20px;
   }
+
   li:has(> *:first-child:is(h2)) {
     --counter-size: 18px;
   }
+
   li:has(> *:first-child:is(h3, h4, h5, h6)) {
     --counter-size: 16px;
   }
-   
-  img, ol, ul, figure, blockquote {
+
+  img,
+  ol,
+  ul,
+  figure,
+  blockquote {
     margin: 24px 0;
   }
 
@@ -59,7 +75,10 @@
     margin-bottom: 12px;
   }
 
-  video, iframe, pre, img {
+  video,
+  iframe,
+  pre,
+  img {
     display: block;
     max-width: 100%;
     border-radius: 16px;
@@ -81,7 +100,7 @@
     cursor: pointer;
     transition-property: text-decoration-color, color;
     transition-duration: .2s;
-    outline-color: var( --color-control-view-action-focused);
+    outline-color: var(--color-control-view-action-focused);
     text-decoration: underline;
     text-underline-offset: .1em;
     -webkit-text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
@@ -120,7 +139,8 @@
     }
   }
 
-  ol, ul {
+  ol,
+  ul {
     font-size: inherit;
     line-height: inherit;
     list-style-type: none;
@@ -140,11 +160,13 @@
         position: relative;
         left: 0;
       }
-      & > *:first-child {
+
+      &>*:first-child {
         display: inline;
       }
 
-      ol, ul {
+      ol,
+      ul {
         margin: 8px 0;
       }
     }
@@ -158,10 +180,10 @@
       margin-top: 12px;
     }
 
-    & > li {
+    &>li {
       --counter-weight: 600;
       --counter-size: inherit;
-      
+
       &:before {
         counter-increment: li;
         content: counters(li, ".") ". ";
@@ -173,27 +195,27 @@
 
     li {
 
-      ol > li {
+      ol>li {
         padding-left: 3.5ch;
         margin-left: -2ch;
 
-        ol > li {
+        ol>li {
           padding-left: 5ch;
           margin-left: -3ch;
 
-          ol > li {
+          ol>li {
             padding-left: 6ch;
             margin-left: -4ch;
 
-            ol > li {
+            ol>li {
               padding-left: 7.5ch;
               margin-left: -5ch;
 
-              ol > li {
+              ol>li {
                 padding-left: 9ch;
                 margin-left: -6ch;
 
-                ol > li {
+                ol>li {
                   padding-left: 10.5ch;
                   margin-left: -7ch;
                 }
@@ -231,11 +253,13 @@
       vertical-align: top;
     }
 
-    thead, tr {
+    thead,
+    tr {
       text-align: left;
     }
 
-    td, th {
+    td,
+    th {
       padding: 16px 16px 16px 0;
       border-bottom: 1px solid #bbb;
       vertical-align: top;
@@ -287,10 +311,10 @@
     margin-top: 0;
   }
 
- *:not(h1):last-child {
+  *:not(h1):last-child {
     margin-bottom: 0;
 
-   img {
+    img {
       margin-bottom: 0;
     }
   }
@@ -344,7 +368,7 @@
   .gallary {
     display: flex;
     gap: var(--grid-guttet);
-  
+
     a {
       max-width: 400px;
       flex: 1 1 200px;
@@ -354,18 +378,18 @@
     img {
       width: 100%;
     }
-  
+
     &:not(.gallary_scroll) {
       flex-wrap: wrap;
     }
-  
+
     &.gallary_scroll {
       overflow-x: auto;
-  
+
       a {
         flex: 1 0 200px;
       }
-  
+
       img {
         min-width: 200px;
       }
@@ -392,5 +416,4 @@ body.content {
     }
   }
 }
-
 </style>

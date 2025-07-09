@@ -41,7 +41,10 @@ const getFromStorage = async () => {
       return JSON.parse(result[STORAGE_NAME]);
     return null;
   } catch (error) {
-    console.error((/* @__PURE__ */ new Date()).toLocaleString() + "Ошибка при получении из хранилища:", error);
+    console.error(
+      (/* @__PURE__ */ new Date()).toLocaleString() + "Ошибка при получении из хранилища:",
+      error
+    );
     return null;
   }
 };
@@ -49,7 +52,10 @@ const setToStorage = async (data) => {
   try {
     await chrome.storage.local.set({ [STORAGE_NAME]: JSON.stringify(data) });
   } catch (error) {
-    console.error((/* @__PURE__ */ new Date()).toLocaleString() + "Ошибка при сохранении в хранилище:", error);
+    console.error(
+      (/* @__PURE__ */ new Date()).toLocaleString() + "Ошибка при сохранении в хранилище:",
+      error
+    );
   }
 };
 const saveWidgetPosition = async () => {
@@ -68,21 +74,37 @@ const loginAdminPanelSecond = async () => {
   if (!(currentProject == null ? void 0 : currentProject.cms)) return;
   const loginBitrix = async () => {
     if (!document.querySelector("[name=USER_LOGIN]")) return;
-    const inputLogin = document.querySelector("[name=USER_LOGIN]"), inputPassword = document.querySelector("[name=USER_PASSWORD]"), inputLoginBtn = document.querySelector("[name=Login]");
+    const inputLogin = document.querySelector(
+      "[name=USER_LOGIN]"
+    ), inputPassword = document.querySelector(
+      "[name=USER_PASSWORD]"
+    ), inputLoginBtn = document.querySelector(
+      "[name=Login]"
+    );
     inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
     inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
     inputLoginBtn.click();
   };
   const loginModx = async () => {
     if (!document.querySelector("[name=username]")) return;
-    const inputLogin = document.querySelector("[name=username]"), inputPassword = document.querySelector("[name=password]"), inputLoginBtn = document.querySelector("[name=login]");
+    const inputLogin = document.querySelector(
+      "[name=username]"
+    ), inputPassword = document.querySelector(
+      "[name=password]"
+    ), inputLoginBtn = document.querySelector(
+      "[name=login]"
+    );
     inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
     inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
     inputLoginBtn.click();
   };
   const loginTilda = async () => {
     if (!document.querySelector("[name=email]")) return;
-    const inputLogin = document.querySelector("[name=email]"), inputPassword = document.querySelector("[name=password]"), inputLoginBtn = document.querySelector("#send");
+    const inputLogin = document.querySelector(
+      "[name=email]"
+    ), inputPassword = document.querySelector(
+      "[name=password]"
+    ), inputLoginBtn = document.querySelector("#send");
     inputLogin.value = (currentProject == null ? void 0 : currentProject.login) || "";
     inputPassword.value = (currentProject == null ? void 0 : currentProject.password) || "";
     if (!document.querySelector("#recaptcha_div")) inputLoginBtn.click();
@@ -100,12 +122,17 @@ const loginAdminPanelSecond = async () => {
   sessionStorage.removeItem("login");
 };
 const loginAdminPanel = async (target) => {
-  if (!(currentProject == null ? void 0 : currentProject.cms)) return window.open(currentProject == null ? void 0 : currentProject.urlAdmin, target);
+  if (!(currentProject == null ? void 0 : currentProject.cms))
+    return window.open(currentProject == null ? void 0 : currentProject.urlAdmin, target);
   const loginUmi = async () => {
     const urlAdmin = "/admin/content/sitetree/";
     const urlLoginAdmin = "/admin/users/login_do/";
     try {
-      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: "error" });
+      await fetch(urlAdmin, {
+        method: "HEAD",
+        credentials: "include",
+        redirect: "error"
+      });
       return window.open(urlAdmin, target);
     } catch (er) {
     }
@@ -137,7 +164,11 @@ const loginAdminPanel = async (target) => {
     const urlAdmin = "/admin.php";
     const urlLoginAdmin = "/login.php";
     try {
-      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: "error" });
+      await fetch(urlAdmin, {
+        method: "HEAD",
+        credentials: "include",
+        redirect: "error"
+      });
       return window.open(urlAdmin, target);
     } catch (er) {
     }
@@ -158,11 +189,15 @@ const loginAdminPanel = async (target) => {
     const urlAdmin = "https://tilda.ru/projects/";
     const urlLoginAdmin = "https://tilda.ru/login/";
     try {
-      await fetch(urlAdmin, { method: "HEAD", credentials: "include", redirect: "error" });
+      await fetch(urlAdmin, {
+        method: "HEAD",
+        credentials: "include",
+        redirect: "error"
+      });
       return window.open(urlAdmin, target);
     } catch (er) {
     }
-    chrome.storage.local.set({ "tildaLogin": JSON.stringify(currentProject) });
+    chrome.storage.local.set({ tildaLogin: JSON.stringify(currentProject) });
     window.open(urlLoginAdmin, target);
   };
   switch (currentProject == null ? void 0 : currentProject.cms) {
@@ -177,11 +212,15 @@ const loginAdminPanel = async (target) => {
     case "Tilda":
       return await loginTilda();
     default:
-      window.open(getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms), target);
+      window.open(
+        getUrlAdminLogin(currentProject.urlAdmin, currentProject.cms),
+        target
+      );
   }
 };
 const checkAdmin = async () => {
-  if (!currentProject || !window.location.href.includes(currentProject == null ? void 0 : currentProject.urlAdmin)) return;
+  if (!currentProject || !window.location.href.includes(currentProject == null ? void 0 : currentProject.urlAdmin))
+    return;
   isAdminPage = true;
   if (sessionStorage.getItem("login")) loginAdminPanelSecond();
 };

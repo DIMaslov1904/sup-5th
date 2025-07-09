@@ -1,7 +1,6 @@
 <template>
   <label class="checkbox">
-    <input class="checkbox-input" type="checkbox" :checked="modelValue"
-      @change="model = !modelValue" />
+    <input class="checkbox-input" type="checkbox" :checked="modelValue" @change="model = !modelValue" />
     <p class="checkbox-label">{{ label }}</p>
   </label>
 </template>

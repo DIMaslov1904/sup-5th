@@ -3,8 +3,8 @@
     <p class="empty-projects__title">Список проектов пуст</p>
 
     <div class="empty-projects__mess-api">
-      <p >Проверьте доступность общего списка проектов</p>
-      <Input v-model="apiUrl"/>
+      <p>Проверьте доступность общего списка проектов</p>
+      <Input v-model="apiUrl" />
     </div>
 
     <div class="empty-projects__mess-upd">
@@ -23,9 +23,8 @@ import Input from '@/components/ui/Input.vue'
 const mainStore = useMainStore()
 const projectsStore = useProjectsStore()
 
-
 const apiUrl = computed({
-  get: () =>  mainStore.state.apiUrl,
+  get: () => mainStore.state.apiUrl,
   set: (val) => mainStore.setApiUrl(val)
 })
 </script>

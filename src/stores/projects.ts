@@ -12,7 +12,6 @@ const defaultState = () => ({
   projects: [],
   isLoading: false,
   isLoadingAccess: false,
-  isLoadingIMG: false,
 });
 const defaultStateOne = (): Project => ({
   name: "",
@@ -77,15 +76,9 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     const notFounds: string[] = [];
 
     state.value.isLoading = true;
-    state.value.isLoadingIMG = true;
     const res = await getProjects();
 
-    if (res.result.length === 0) {
-      noticeStore.add("error", "Проектов не найдено");
-      state.value.isLoading = false;
-      state.value.isLoadingIMG = false;
-      return;
-    }
+    if (res.result.length === 0) return (state.value.isLoading = false);
 
     let indexs =
       state.value.projects.length > 0
@@ -148,7 +141,6 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     }
 
     state.value.isLoading = false;
-    state.value.isLoadingIMG = false;
   };
 
   const updateAccess = async () => {
@@ -159,6 +151,8 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
     state.value.isLoadingAccess = true;
 
     const res = await getAccess();
+
+    if (res.result.length === 0) return (state.value.isLoadingAccess = false);
 
     for (const item of res.result) {
       const newItem = {

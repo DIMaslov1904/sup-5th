@@ -3,7 +3,7 @@
   "name": "Sup 5th",
   "version": "3.0.0",
   "description": "Расширение поддержки 5-го измерения",
-   "icons": {
+  "icons": {
     "16": "assets/expansion/icon-16.png",
     "32": "assets/expansion/icon-32.png",
     "48": "assets/expansion/icon-48.png",
@@ -12,13 +12,8 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": [
-    "storage",
-    "activeTab"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "src/popup/index.html",
     "default_title": "Sup 5th"
@@ -31,7 +26,7 @@
       "run_at": "document_end"
     },
     {
-      "matches": [ "https://support.5th.ru/*"],
+      "matches": ["https://support.5th.ru/*"],
       "js": ["support.js"],
       "css": ["support.css"],
       "run_at": "document_end"

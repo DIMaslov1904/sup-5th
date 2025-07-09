@@ -3,13 +3,13 @@
     <div v-if="layout === 'welcome'" class="welcome-page">
       <h2>Приветсвие</h2>
       <div class="welcome-input-wrap">
-        <Input class="welcome-input" v-model="apiAccessUrl" placeholder="Url до api с личными доступами" style="padding-right: 140px;" />
+        <Input class="welcome-input" v-model="apiAccessUrl" placeholder="Url до api с личными доступами"
+          style="padding-right: 140px;" />
         <Button @click="setLayout('instruction')">Как получить url?</Button>
       </div>
 
-      <div v-if="isLoadingProojectsErr && !projectsStore.state.isLoading && projectsStore.state.projects.length === 0" class="welcome-input-wrap">
-        <p class="welcome-text-err" v-html="isLoadingProojectsErr"></p>
-        <Input class="welcome-input" v-model="apiUrl" placeholder="Url до api со всеми проектами" />
+      <div class="welcome-input-wrap">
+        <Input class="welcome-input" v-model="apiUrl" placeholder="Url до api со всеми проектами (из инструкции)" />
       </div>
 
       <div class="flex welcome-buttons">
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onUnmounted, computed } from 'vue'
 import { useMainStore, useProjectsStore } from '@/stores'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
@@ -37,37 +37,27 @@ const projectsStore = useProjectsStore()
 const apiAccessUrl = ref(store.state.apiAccessUrl)
 
 const layout = ref('welcome')
-const isLoadingProojectsErr = ref('')
 
-const emits = defineEmits< {
+const emits = defineEmits<{
   setIsFixHeight: [boolean]
 }>()
 
-const setLayout = (name: string) => { 
+const setLayout = (name: string) => {
   emits('setIsFixHeight', name === 'welcome')
   layout.value = name
 }
 
 const apiUrl = computed({
-  get: () =>  store.state.apiUrl,
+  get: () => store.state.apiUrl,
   set: (val) => store.setApiUrl(val)
 })
 
-onMounted(async () => {
-  if (projectsStore.state.projects.length === 0) {
-    isLoadingProojectsErr.value = 'Не удалось загрузить проекты!<br> Проеверьте адрес до api'
-    if (store.state.apiUrl) await projectsStore.update()
-    else isLoadingProojectsErr.value = 'Не указан api url ко всем проектам!'
-  }
-})
-
 onUnmounted(async () => {
-  if (projectsStore.state.projects.length === 0 && store.state.apiUrl && apiAccessUrl.value)
+  if (store.state.apiUrl && apiAccessUrl.value)
     await projectsStore.updateAll()
   else if (apiAccessUrl.value)
     await projectsStore.updateAccess()
 })
-
 </script>
 
 <style lang="scss">
@@ -84,7 +74,7 @@ onUnmounted(async () => {
   overflow: auto;
   padding: 10px;
 
-  
+
   &.fade-leave-to {
     animation: fade 1s ease-in-out;
   }
@@ -115,14 +105,10 @@ onUnmounted(async () => {
   height: 100%;
 }
 
-.welcome-text-err {
-  margin-bottom: 24px;
-}
-
 .welcome-input-wrap {
   position: relative;
   width: 80%;
-  margin:0 auto;
+  margin: 0 auto;
 
   button {
     position: absolute;
@@ -145,8 +131,8 @@ onUnmounted(async () => {
 .welcome-input {
   width: 100%;
 }
+
 .welcome-buttons {
   justify-content: center;
 }
-
 </style>

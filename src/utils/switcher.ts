@@ -22,20 +22,19 @@ const output = swithcher.getSwitch(str, {type: 'retranslit'})
 console.log(output) // Пример транслитерации!
 */
 
-
 interface Config {
   dictionary: {
-    keys: { [key: string]: string }
-    translit: { [key: string]: string }
-    retranslit: { [key: string]: string }
-  }
-  default?: { [key: string]: string }
+    keys: { [key: string]: string };
+    translit: { [key: string]: string };
+    retranslit: { [key: string]: string };
+  };
+  default?: { [key: string]: string };
 }
 
-type ConversionType = 'rueng' | 'engru' | 'translit' | 'retranslit'
+type ConversionType = "rueng" | "engru" | "translit" | "retranslit";
 
 interface Settings {
-  type?: ConversionType
+  type?: ConversionType;
 }
 
 const config: Config = {
@@ -194,70 +193,70 @@ const config: Config = {
       "e'": "э",
       "E'": "Э",
     },
-  }
-}
+  },
+};
 
 const _flip = function (trans: { [key: string]: string }): {
-  [key: string]: string
+  [key: string]: string;
 } {
   let key: string,
-    tmp: { [key: string]: string } = {}
+    tmp: { [key: string]: string } = {};
   for (key in trans) {
-    tmp[trans[key]] = key
+    tmp[trans[key]] = key;
   }
-  return tmp
-}
+  return tmp;
+};
 
-const flippedKeys = _flip(config.dictionary.keys)
-const flippedTranslit = _flip(config.dictionary.translit)
+const flippedKeys = _flip(config.dictionary.keys);
+const flippedTranslit = _flip(config.dictionary.translit);
 
 export default function (str: string, settings?: Settings): string {
-  if (typeof str !== 'string') throw new Error('Передана не строка')
-  if (str.length === 0) return str
-  
-  let mappingDict: { [key: string]: string } = {}
-  
-  const type = settings?.type || 'engru'
-  
+  if (typeof str !== "string") throw new Error("Передана не строка");
+  if (str.length === 0) return str;
+
+  let mappingDict: { [key: string]: string } = {};
+
+  const type = settings?.type || "engru";
+
   switch (type) {
     case "rueng":
-      mappingDict = config.dictionary.keys
-      break
+      mappingDict = config.dictionary.keys;
+      break;
     case "engru":
-      mappingDict = flippedKeys
-      break
+      mappingDict = flippedKeys;
+      break;
     case "translit":
-      mappingDict = config.dictionary.translit
-      break
+      mappingDict = config.dictionary.translit;
+      break;
     case "retranslit":
-      mappingDict = flippedTranslit
-      str = _fix(str)
-      break
+      mappingDict = flippedTranslit;
+      str = _fix(str);
+      break;
     default:
-      mappingDict = flippedKeys
-      break
+      mappingDict = flippedKeys;
+      break;
   }
 
   let textToArray: string[] = str.split(""),
-  result: string[] = []
+    result: string[] = [];
 
   textToArray.forEach(function (sym: string, i: number) {
     if (mappingDict.hasOwnProperty(textToArray[i])) {
-      result.push(mappingDict[textToArray[i]])
+      result.push(mappingDict[textToArray[i]]);
     } else {
-      result.push(sym)
+      result.push(sym);
     }
-  })
-  return result.join("") 
+  });
+  return result.join("");
 }
 
 const _fix = function (str: string): string {
-  let obj = config.dictionary.retranslit
+  let obj = config.dictionary.retranslit;
   Object.keys(obj).map(function (key: string) {
-    let reg = new RegExp("(" + key + ")", "g")
+    let reg = new RegExp("(" + key + ")", "g");
     str = str.replace(reg, (s: string) => {
-      return obj[s]
-    })
-  })
-  return str
-}
+      return obj[s];
+    });
+  });
+  return str;
+};

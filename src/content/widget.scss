@@ -5,27 +5,36 @@
   --width-full: 272px;
   --width: 68px;
   --height: 68px;
-  --translate: translate(min(max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh));
+  --translate: translate(
+    min(
+      max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)),
+      0dvw
+    ),
+    min(
+      max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)),
+      0dvh
+    )
+  );
   position: fixed;
   right: 16px;
   bottom: 16px;
   z-index: 1000000000000;
-  background: rgb(255 255 255 / .9);
+  background: rgb(255 255 255 / 0.9);
   border-radius: 16px;
   user-select: none;
   transform: var(--translate);
   font-size: 0;
-  box-shadow: 0 0 11px 2px rgb(0 0 0 / .2);
+  box-shadow: 0 0 11px 2px rgb(0 0 0 / 0.2);
   display: inline-flex;
   width: var(--width);
   overflow: hidden;
 
   &:hover {
-    transition: width .3s, transform .3s;
+    transition: width 0.3s, transform 0.3s;
   }
 
   &.open {
-    --width: var(--width-full)!important;
+    --width: var(--width-full) !important;
   }
 
   .sup-5th-menu:hover {
@@ -42,9 +51,9 @@
     opacity: 0.8;
     cursor: grabbing;
     transform: var(--translate) scale(1.05);
-    box-shadow: 0 0 15px 2px rgb(0 0 0 / .2);
+    box-shadow: 0 0 15px 2px rgb(0 0 0 / 0.2);
 
-     .sup-5th-btn {
+    .sup-5th-btn {
       pointer-events: none;
     }
   }
@@ -65,7 +74,7 @@
   box-sizing: border-box;
   color: #000;
   transition-property: transform, background-color, color;
-  transition-duration: .3s;
+  transition-duration: 0.3s;
   background-color: transparent;
 
   svg {

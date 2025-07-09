@@ -1,9 +1,9 @@
 <template>
   <a v-if="href" :href="href" class="button" :class="`button_${size}`">
-    <slot/>
+    <slot />
   </a>
   <button v-else class="button" :class="`button_${size}`">
-    <slot/>
+    <slot />
   </button>
 </template>
 
@@ -50,7 +50,7 @@ withDefaults(defineProps<Props>(), {
     padding: 10px 20px;
     min-height: 44px;
   }
-  
+
   &:hover {
     background-color: var(--color-secondaty-hover);
   }
@@ -60,7 +60,8 @@ withDefaults(defineProps<Props>(), {
     pointer-events: none;
   }
 
-  svg, img {
+  svg,
+  img {
     max-width: var(--size-svg);
     max-height: var(--size-svg);
   }

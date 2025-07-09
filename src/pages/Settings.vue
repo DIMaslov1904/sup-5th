@@ -2,14 +2,13 @@
   <form class="settings-form">
     <div class="settings-form__field">
       <span>Ссылка на получение всех проектов</span>
-      <Input v-model="apiUrl"/>
+      <Input v-model="apiUrl" />
     </div>
     <div class="settings-form__field">
       <span>Ссылка на получение личных доступов</span>
-      <Input v-model="apiAccessUrl"/>
+      <Input v-model="apiAccessUrl" />
     </div>
 
-    
     <Button @click="removeFromStorage">
       Сбросить настройки и данные
     </Button>
@@ -19,18 +18,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMainStore } from '@/stores'
-import { removeFromStorage  } from '@/utils/chrome-api'
+import { removeFromStorage } from '@/utils/chrome-api'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 
 const mainStore = useMainStore()
 
 const apiUrl = computed({
-  get: () =>  mainStore.state.apiUrl,
+  get: () => mainStore.state.apiUrl,
   set: (val) => mainStore.setApiUrl(val)
 })
 const apiAccessUrl = computed({
-  get: () =>  mainStore.state.apiAccessUrl,
+  get: () => mainStore.state.apiAccessUrl,
   set: (val) => mainStore.setApiAccessUrl(val)
 })
 </script>
@@ -39,7 +38,7 @@ const apiAccessUrl = computed({
 .settings-form {
   display: grid;
   gap: 23px;
-  padding: 20px;  
+  padding: 20px;
   justify-items: start;
 }
 

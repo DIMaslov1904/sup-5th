@@ -1,21 +1,23 @@
 <template>
   <LayoutsDefault>
     <transition name="fade">
-      <Welcome v-if="store.state.init" @setIsFixHeight="setIsFixHeight"/>
+      <Welcome v-if="store.state.init" @setIsFixHeight="setIsFixHeight" />
     </transition>
     <PopupContent v-if="!isLoading" :fixHeight>
       <Current v-if="store.state.page === 'currentSite'" />
       <Services v-else-if="store.state.page === 'services'" />
-      <ProjectList v-else-if="store.state.page === 'projectList'" @setIsFixHeight="setIsFixHeight"/>
+      <ProjectList v-else-if="store.state.page === 'projectList'" @setIsFixHeight="setIsFixHeight" />
       <Settings v-else-if="store.state.page === 'settings'" />
       <Audit v-else-if="store.state.page === 'audit'" />
       <Notification v-else-if="store.state.page === 'notification'" />
     </PopupContent>
     <PopupNav>
-      <PopupNavItem title="Текущий проект" @click="store.setPage('currentSite')" :active="store.state.page === 'currentSite'">
+      <PopupNavItem title="Текущий проект" @click="store.setPage('currentSite')"
+        :active="store.state.page === 'currentSite'">
         <LocationIcon />
       </PopupNavItem>
-      <PopupNavItem title="Полезные сервисы" @click="store.setPage('services')" :active="store.state.page === 'services'">
+      <PopupNavItem title="Полезные сервисы" @click="store.setPage('services')"
+        :active="store.state.page === 'services'">
         <LayerIcon />
       </PopupNavItem>
       <PopupNavItem title="Список проектов" @click="store.setPage('projectList')"

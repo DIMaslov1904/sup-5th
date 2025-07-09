@@ -94,7 +94,11 @@ const nextOnCloseModal = () => {
   const iframeLocation = (_a = iframeBody == null ? void 0 : iframeBody.contentWindow) == null ? void 0 : _a.location;
   (iframeLocation ? iframeLocation : location).reload();
 };
-const modal = createModal("iframe-modal", prevOnOpenModal, nextOnCloseModal);
+const modal = createModal(
+  "iframe-modal",
+  prevOnOpenModal,
+  nextOnCloseModal
+);
 const waitForElm = (selector) => {
   return new Promise((resolve) => {
     const element = d.querySelector(selector);
@@ -135,7 +139,8 @@ const getBtns = async () => {
 const updateContainerActions = async (mutationRecords) => {
   var _a;
   try {
-    if (((_a = mutationRecords[1].addedNodes[0]) == null ? void 0 : _a.id) !== "ticket-wrapper") return;
+    if (((_a = mutationRecords[1].addedNodes[0]) == null ? void 0 : _a.id) !== "ticket-wrapper")
+      return;
   } catch (error) {
   }
   getBtns();
@@ -143,11 +148,14 @@ const updateContainerActions = async (mutationRecords) => {
 const startObserverTicketWrapper = async () => {
   const wrap = (await waitForElm("#ticket-wrapper")).parentElement;
   getBtns();
-  new MutationObserver(updateContainerActions).observe(wrap, { childList: true });
+  new MutationObserver(updateContainerActions).observe(wrap, {
+    childList: true
+  });
 };
-if (iframeBody) iframeBody.addEventListener("load", () => {
-  var _a;
-  d = (_a = iframeBody == null ? void 0 : iframeBody.contentWindow) == null ? void 0 : _a.document;
-  startObserverTicketWrapper();
-});
+if (iframeBody)
+  iframeBody.addEventListener("load", () => {
+    var _a;
+    d = (_a = iframeBody == null ? void 0 : iframeBody.contentWindow) == null ? void 0 : _a.document;
+    startObserverTicketWrapper();
+  });
 else startObserverTicketWrapper();

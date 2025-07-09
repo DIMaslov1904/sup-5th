@@ -21,7 +21,6 @@ defineEmits<{
   close: []
 }>()
 
-
 watch(props, () => {
   if (!dialog.value) return
   props.isShowModal ? dialog.value.showModal() : dialog.value.close()

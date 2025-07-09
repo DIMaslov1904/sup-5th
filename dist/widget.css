@@ -5,7 +5,16 @@
   --width-full: 272px;
   --width: 68px;
   --height: 68px;
-  --translate: translate(min(max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)), 0dvw), min(max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)), 0dvh));
+  --translate: translate(
+    min(
+      max(var(--x), calc((100dvw - var(--width) - var(--offset)) * -1)),
+      0dvw
+    ),
+    min(
+      max(var(--y), calc((100dvh - var(--height) - var(--offset)) * -1)),
+      0dvh
+    )
+  );
   position: fixed;
   right: 16px;
   bottom: 16px;
@@ -24,7 +33,7 @@
   transition: width 0.3s, transform 0.3s;
 }
 .sup-5th-widget.open {
-  --width: var(--width-full)!important;
+  --width: var(--width-full) !important;
 }
 .sup-5th-widget .sup-5th-menu:hover {
   transform: scale(1.05);

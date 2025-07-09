@@ -1,5 +1,5 @@
 <template>
-  <button class="popup-nav__item" :class="{'active':active}" :title>
+  <button class="popup-nav__item" :class="{ 'active': active }" :title>
     <slot />
     <span v-if="count" class="popup-nav__item-count">{{ count }}</span>
   </button>
@@ -44,7 +44,7 @@ defineProps({
   &.active {
     background-color: var(--color-primary);
     color: var(--color-text-primary);
-    
+
     .popup-nav__item-count {
       background-color: #fff;
       color: #000;

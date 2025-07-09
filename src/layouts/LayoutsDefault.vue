@@ -5,7 +5,6 @@
 </template>
 
 <style lang="scss">
-
 :root {
   color-scheme: light dark;
 

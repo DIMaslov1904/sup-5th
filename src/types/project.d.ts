@@ -17,6 +17,5 @@ type Project = {
 type ProjectStorage = {
   projects: Project[];
   isLoading: boolean;
-  isLoadingIMG: boolean;
   isLoadingAccess: boolean;
 };

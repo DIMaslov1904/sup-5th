@@ -1,15 +1,15 @@
 type ServicesItem = {
-  url: string
-  name: string
-  description: string
-}
+  url: string;
+  name: string;
+  description: string;
+};
 
 type ServicesGroup = {
-  name: string
-}
+  name: string;
+};
 
 type ServicesState = {
-  personal: string
-  favourites: {} | ServicesItem
-  list: ServicesItem[] | ServicesGroup[]
-}
+  personal: string;
+  favourites: {} | ServicesItem;
+  list: ServicesItem[] | ServicesGroup[];
+};

@@ -8,12 +8,12 @@
 <script setup lang="ts">
 import CurrentContent from '@/components/CurrentContent.vue';
 import Button from '@/components/ui/Button.vue'
-defineProps <{
+defineProps<{
   project: Project
 }>()
 
-defineEmits < {
-  backward:[]
+defineEmits<{
+  backward: []
 }>()
 </script>
 

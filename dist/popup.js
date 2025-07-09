@@ -7412,7 +7412,10 @@ function defineStore(id, setup, setupOptions) {
 }
 const getCurrentTab = async () => {
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
     return tab || null;
   } catch (error) {
     console.error("Ошибка при получении текущей вкладки:", error);
@@ -7444,16 +7447,11 @@ const removeFromStorage = async () => {
     console.error("Ошибка при удалении из хранилища:", error);
   }
 };
-const URL_IMG_CMS = "/assets/icons/{}.svg";
-const URL_ALL_PROJECTS = "https://script.google.com/macros/s/AKfycbxmXBEcD3U0-e9nTwJ02EkAKXLsxTYkkYt6t9Wni6m_Fgr7OaWnTc_WEPLu2Up1M8w/exec";
-const GET_PARM_GET_SERVICES = "?get=services";
-const IGNORE_SITE_ON_PROJECTS = ["tilda"];
 const STORAGE_NAME$4 = "mainState";
 const defaultState$4 = () => ({
   page: "currentSite",
-  apiUrl: URL_ALL_PROJECTS,
-  apiAccessUrl: "https://script.google.com/macros/s/AKfycbxhWA-PJLQT6sswIlwg_0wjXWhy9cuJeYa90yhnXaU1sHY6_Yyt4qmspU1YBzdBaU3B/exec",
-  //TODO: удалить
+  apiUrl: "",
+  apiAccessUrl: "",
   hiddenAdmButton: false
 });
 const useMainStore = /* @__PURE__ */ defineStore(STORAGE_NAME$4, () => {
@@ -7501,10 +7499,16 @@ const getProjects = async () => {
       signal: controller.signal
     });
     if (!response.ok) {
-      noticeStore.add("error", `Ошибка при получении проектов: ${response.status}`);
+      noticeStore.add(
+        "error",
+        `Ошибка при получении проектов: ${response.status}`
+      );
       return { result: [] };
     }
-    return await response.json();
+    const r = await response.json();
+    if (r.result.length === 0)
+      noticeStore.add("warning", `Пустой результат запроса проектов`);
+    return r;
   } catch (error) {
     noticeStore.add("error", `Ошибка при получении проектов: ${error}`);
     return { result: [] };
@@ -7530,9 +7534,15 @@ const getAccess = async () => {
       signal: controller.signal
     });
     if (!response.ok) {
-      noticeStore.add("error", `Ошибка при получении доступов: ${response.status}`);
+      noticeStore.add(
+        "error",
+        `Ошибка при получении доступов: ${response.status}`
+      );
     }
-    return await response.json();
+    const r = await response.json();
+    if (r.result.length === 0)
+      noticeStore.add("warning", `Пустой результат запроса доступов`);
+    return r;
   } catch (error) {
     noticeStore.add("error", `Ошибка при получении доступов: ${error}`);
     return { result: [] };
@@ -7598,12 +7608,14 @@ const getDomain = (url) => {
     return url;
   }
 };
+const URL_IMG_CMS = "/assets/icons/{}.svg";
+const GET_PARM_GET_SERVICES = "?get=services";
+const IGNORE_SITE_ON_PROJECTS = ["tilda"];
 const STORAGE_NAME$2 = "projectsState";
 const defaultState$2 = () => ({
   projects: [],
   isLoading: false,
-  isLoadingAccess: false,
-  isLoadingIMG: false
+  isLoadingAccess: false
 });
 const defaultStateOne = () => ({
   name: "",
@@ -7661,14 +7673,8 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
     let constAdd = 0;
     const notFounds = [];
     state.value.isLoading = true;
-    state.value.isLoadingIMG = true;
     const res = await getProjects();
-    if (res.result.length === 0) {
-      noticeStore.add("error", "Проектов не найдено");
-      state.value.isLoading = false;
-      state.value.isLoadingIMG = false;
-      return;
-    }
+    if (res.result.length === 0) return state.value.isLoading = false;
     let indexs = state.value.projects.length > 0 ? [...Array(state.value.projects.length).keys()] : [];
     try {
       for (const item of res.result) {
@@ -7716,7 +7722,6 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
       console.error(e);
     }
     state.value.isLoading = false;
-    state.value.isLoadingIMG = false;
   };
   const updateAccess = async () => {
     const noticeStore = useNoticeStore();
@@ -7724,6 +7729,7 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
     const newProjects = [];
     state.value.isLoadingAccess = true;
     const res = await getAccess();
+    if (res.result.length === 0) return state.value.isLoadingAccess = false;
     for (const item of res.result) {
       const newItem = {
         url: getDomain(item[1]),
@@ -7822,15 +7828,21 @@ const geServices = async () => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 3e4);
   try {
-    const response = await fetch(`${store.state.apiUrl + GET_PARM_GET_SERVICES}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      signal: controller.signal
-    });
+    const response = await fetch(
+      `${store.state.apiUrl + GET_PARM_GET_SERVICES}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        signal: controller.signal
+      }
+    );
     if (!response.ok) {
-      noticeStore.add("error", `Ошибка при получении сервисов: ${response.status}`);
+      noticeStore.add(
+        "error",
+        `Ошибка при получении сервисов: ${response.status}`
+      );
       return { result: [] };
     }
     return await response.json();
@@ -7852,8 +7864,7 @@ function debounce(func, ms) {
 }
 const STORAGE_NAME = "servicesState";
 const defaultState = () => ({
-  personal: "docs.google.com/spreadsheets/d/11CrY3JrSZYKQ4UmCvwxDcu4ErUedkhPMqmwX3gnwEcQ/edit?gid=0#gid=0",
-  // TODO: УДАЛИТЬ
+  personal: "",
   favourites: {},
   list: []
 });
@@ -8497,7 +8508,7 @@ const _hoisted_3$8 = ["href", "title"];
 const _hoisted_4$3 = ["src"];
 const _hoisted_5$2 = ["src"];
 const _hoisted_6$2 = ["href"];
-const _hoisted_7$2 = ["src"];
+const _hoisted_7$1 = ["src"];
 const _hoisted_8$1 = ["src"];
 const _sfc_main$q = /* @__PURE__ */ defineComponent({
   __name: "CurrentContent",
@@ -8540,7 +8551,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
           default: withCtx(() => [
             createBaseVNode("img", {
               src: unref(getIcon)("gitlab")
-            }, null, 8, _hoisted_7$2)
+            }, null, 8, _hoisted_7$1)
           ]),
           _: 1
         }, 8, ["href"])) : createCommentVNode("", true),
@@ -9095,7 +9106,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["__scopeId", "data-v-1eda9e12"]]);
+const Modal = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["__scopeId", "data-v-55c28c57"]]);
 const _sfc_main$h = /* @__PURE__ */ defineComponent({
   __name: "Textarea",
   props: {
@@ -9127,7 +9138,7 @@ const _hoisted_3$6 = { class: "services__header" };
 const _hoisted_4$1 = { class: "services__list" };
 const _hoisted_5$1 = { class: "services__item services__item_personal" };
 const _hoisted_6$1 = ["href"];
-const _hoisted_7$1 = {
+const _hoisted_7 = {
   key: 0,
   class: "services__item"
 };
@@ -9214,7 +9225,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
                 })
               ], 64))
             ]),
-            unref(servicesStore).state.favourites.url ? (openBlock(), createElementBlock("li", _hoisted_7$1, [
+            unref(servicesStore).state.favourites.url ? (openBlock(), createElementBlock("li", _hoisted_7, [
               createVNode(_sfc_main$n, {
                 ifFavorite: "",
                 services: unref(servicesStore).state.favourites,
@@ -9606,13 +9617,9 @@ const _hoisted_2$2 = {
   class: "welcome-page"
 };
 const _hoisted_3$2 = { class: "welcome-input-wrap" };
-const _hoisted_4 = {
-  key: 0,
-  class: "welcome-input-wrap"
-};
-const _hoisted_5 = ["innerHTML"];
-const _hoisted_6 = { class: "flex welcome-buttons" };
-const _hoisted_7 = { class: "welcome-return-wrap" };
+const _hoisted_4 = { class: "welcome-input-wrap" };
+const _hoisted_5 = { class: "flex welcome-buttons" };
+const _hoisted_6 = { class: "welcome-return-wrap" };
 const _sfc_main$7 = /* @__PURE__ */ defineComponent({
   __name: "Welcome",
   emits: ["setIsFixHeight"],
@@ -9621,7 +9628,6 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     const projectsStore = useProjectsStore();
     const apiAccessUrl = ref(store.state.apiAccessUrl);
     const layout = ref("welcome");
-    const isLoadingProojectsErr = ref("");
     const emits = __emit;
     const setLayout = (name) => {
       emits("setIsFixHeight", name === "welcome");
@@ -9631,15 +9637,8 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
       get: () => store.state.apiUrl,
       set: (val) => store.setApiUrl(val)
     });
-    onMounted(async () => {
-      if (projectsStore.state.projects.length === 0) {
-        isLoadingProojectsErr.value = "Не удалось загрузить проекты!<br> Проеверьте адрес до api";
-        if (store.state.apiUrl) await projectsStore.update();
-        else isLoadingProojectsErr.value = "Не указан api url ко всем проектам!";
-      }
-    });
     onUnmounted(async () => {
-      if (projectsStore.state.projects.length === 0 && store.state.apiUrl && apiAccessUrl.value)
+      if (store.state.apiUrl && apiAccessUrl.value)
         await projectsStore.updateAll();
       else if (apiAccessUrl.value)
         await projectsStore.updateAccess();
@@ -9666,19 +9665,15 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
               __: [5]
             })
           ]),
-          isLoadingProojectsErr.value && !unref(projectsStore).state.isLoading && unref(projectsStore).state.projects.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_4, [
-            createBaseVNode("p", {
-              class: "welcome-text-err",
-              innerHTML: isLoadingProojectsErr.value
-            }, null, 8, _hoisted_5),
+          createBaseVNode("div", _hoisted_4, [
             createVNode(Input, {
               class: "welcome-input",
               modelValue: apiUrl.value,
               "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => apiUrl.value = $event),
-              placeholder: "Url до api со всеми проектами"
+              placeholder: "Url до api со всеми проектами (из инструкции)"
             }, null, 8, ["modelValue"])
-          ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_6, [
+          ]),
+          createBaseVNode("div", _hoisted_5, [
             createVNode(_sfc_main$z, {
               onClick: _cache[3] || (_cache[3] = ($event) => unref(store).setApiAccessUrl(apiAccessUrl.value))
             }, {
@@ -9691,7 +9686,7 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
           ])
         ])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
           createVNode(_sfc_main$8),
-          createBaseVNode("div", _hoisted_7, [
+          createBaseVNode("div", _hoisted_6, [
             createVNode(_sfc_main$z, {
               class: "welcome-return",
               onClick: _cache[4] || (_cache[4] = ($event) => setLayout("welcome"))

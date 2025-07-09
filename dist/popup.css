@@ -132,7 +132,8 @@ body {
   opacity: 0.8;
   pointer-events: none;
 }
-.button svg, .button img {
+.button svg,
+.button img {
   max-width: var(--size-svg);
   max-height: var(--size-svg);
 }.copy-text {
@@ -233,7 +234,9 @@ body {
 .services-item__favorite:hover.services-item__favorite_added .remove {
   opacity: 1;
 }
-.services-item__favorite-icon .added, .services-item__favorite-icon .remove, .services-item__favorite-icon .add {
+.services-item__favorite-icon .added,
+.services-item__favorite-icon .remove,
+.services-item__favorite-icon .add {
   opacity: 0;
 }
 .services-item__favorite_added .services-item__favorite-icon .added {
@@ -269,22 +272,22 @@ input[data-v-64052fc6]:hover {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-}dialog[data-v-1eda9e12] {
+}dialog[data-v-55c28c57] {
   margin: auto;
   border-radius: 9px;
   border: none;
   background-color: var(--color-bg-body);
 }
-dialog .wrapper[data-v-1eda9e12] {
+dialog .wrapper[data-v-55c28c57] {
   position: relative;
   max-width: 720px;
   min-width: 200px;
   padding: 32px;
 }
-dialog[data-v-1eda9e12]::backdrop {
+dialog[data-v-55c28c57]::backdrop {
   background-color: rgba(54, 57, 69, 0.5);
 }
-dialog .close[data-v-1eda9e12] {
+dialog .close[data-v-55c28c57] {
   display: block;
   padding: 0;
   position: absolute;
@@ -296,7 +299,7 @@ dialog .close[data-v-1eda9e12] {
   height: 24px;
   transition: color 0.2s;
 }
-dialog .close[data-v-1eda9e12]::before, dialog .close[data-v-1eda9e12]::after {
+dialog .close[data-v-55c28c57]::before, dialog .close[data-v-55c28c57]::after {
   content: "";
   position: relative;
   display: block;
@@ -305,14 +308,14 @@ dialog .close[data-v-1eda9e12]::before, dialog .close[data-v-1eda9e12]::after {
   background-color: currentColor;
   margin: 0 auto;
 }
-dialog .close[data-v-1eda9e12]::before {
+dialog .close[data-v-55c28c57]::before {
   transform: rotate(45deg);
 }
-dialog .close[data-v-1eda9e12]::after {
+dialog .close[data-v-55c28c57]::after {
   top: -1px;
   transform: rotate(-45deg);
 }
-dialog .close[data-v-1eda9e12]:hover {
+dialog .close[data-v-55c28c57]:hover {
   background-color: var(--color-primary);
 }textarea[data-v-6473d463] {
   padding: 10px;
@@ -576,13 +579,19 @@ textarea[data-v-6473d463]:hover {
   font-weight: 500;
   line-height: 1.6;
 }
-.content b, .content strong {
+.content b,
+.content strong {
   font-weight: bold;
 }
 .content i {
   font-style: italic;
 }
-.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
   font-weight: 800;
   margin-top: 24px;
   margin-bottom: 16px;
@@ -593,7 +602,10 @@ textarea[data-v-6473d463]:hover {
 .content h2 {
   font-size: 18px;
 }
-.content h3, .content h4, .content h5, .content h6 {
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
   font-size: 16px;
 }
 .content li:has(> *:first-child:is(h1, h2, h3, h4, h5, h6)) {
@@ -608,7 +620,11 @@ textarea[data-v-6473d463]:hover {
 .content li:has(> *:first-child:is(h3, h4, h5, h6)) {
   --counter-size: 16px;
 }
-.content img, .content ol, .content ul, .content figure, .content blockquote {
+.content img,
+.content ol,
+.content ul,
+.content figure,
+.content blockquote {
   margin: 24px 0;
 }
 .content p {
@@ -616,7 +632,10 @@ textarea[data-v-6473d463]:hover {
   line-height: inherit;
   margin-bottom: 12px;
 }
-.content video, .content iframe, .content pre, .content img {
+.content video,
+.content iframe,
+.content pre,
+.content img {
   display: block;
   max-width: 100%;
   border-radius: 16px;
@@ -660,7 +679,8 @@ textarea[data-v-6473d463]:hover {
   width: 32px;
   height: 32px;
 }
-.content ol, .content ul {
+.content ol,
+.content ul {
   font-size: inherit;
   line-height: inherit;
   list-style-type: none;
@@ -668,21 +688,28 @@ textarea[data-v-6473d463]:hover {
   display: grid;
   gap: 16px;
 }
-.content ol li, .content ul li {
+.content ol li,
+.content ul li {
   position: relative;
   margin-bottom: 4px;
 }
-.content ol li:last-of-type, .content ul li:last-of-type {
+.content ol li:last-of-type,
+.content ul li:last-of-type {
   margin-bottom: 0;
 }
-.content ol li:before, .content ul li:before {
+.content ol li:before,
+.content ul li:before {
   position: relative;
   left: 0;
 }
-.content ol li > *:first-child, .content ul li > *:first-child {
+.content ol li > *:first-child,
+.content ul li > *:first-child {
   display: inline;
 }
-.content ol li ol, .content ol li ul, .content ul li ol, .content ul li ul {
+.content ol li ol,
+.content ol li ul,
+.content ul li ol,
+.content ul li ul {
   margin: 8px 0;
 }
 .content ol {
@@ -748,22 +775,27 @@ textarea[data-v-6473d463]:hover {
   font-size: inherit;
   vertical-align: top;
 }
-.content table thead, .content table tr {
+.content table thead,
+.content table tr {
   text-align: left;
 }
-.content table td, .content table th {
+.content table td,
+.content table th {
   padding: 16px 16px 16px 0;
   border-bottom: 1px solid #bbb;
   vertical-align: top;
 }
-.content table td:last-child, .content table th:last-child {
+.content table td:last-child,
+.content table th:last-child {
   padding-right: 0;
 }
-.content table td p, .content table th p {
+.content table td p,
+.content table th p {
   margin-bottom: 0.5em;
   font-weight: 500;
 }
-.content table td p:last-child, .content table th p:last-child {
+.content table td p:last-child,
+.content table th p:last-child {
   margin-bottom: 0;
 }
 .content div:has(> table) {
@@ -907,9 +939,6 @@ body.content .gallary_scroll a {
   text-align: center;
   gap: 20px;
   height: 100%;
-}
-.welcome-text-err {
-  margin-bottom: 24px;
 }
 .welcome-input-wrap {
   position: relative;

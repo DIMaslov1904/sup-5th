@@ -30,7 +30,7 @@
     background-color: transparent;
     border-radius: 12px;
     font-size: 16px;
-    transition: background .2s, border .2s, color .2s;
+    transition: background 0.2s, border 0.2s, color 0.2s;
     position: absolute;
     top: 12px;
     right: 12px;
@@ -44,7 +44,7 @@
 
     &::after,
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       width: 17px;
       height: 1px;
@@ -70,11 +70,10 @@
 
 .ui-button.edit-time-taskt:hover {
   border-color: #84bdde;
-  background-image: url('images/ui-bg_glass_75_c6e9fe_1x400.png');
+  background-image: url("images/ui-bg_glass_75_c6e9fe_1x400.png");
   color: #111;
   box-shadow: inset 0px 1px 0px #fff, inset 0px -1px 0px #f2faff;
 }
-
 
 @starting-style {
   .modal[open] {
@@ -82,7 +81,7 @@
     transform: scale(0);
 
     &::backdrop {
-      background: rgba(39  39  39 / 0);
+      background: rgba(39 39 39 / 0);
     }
   }
 }
