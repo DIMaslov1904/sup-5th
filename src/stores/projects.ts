@@ -4,6 +4,7 @@ import { setToStorage, getFromStorage } from "@/utils/chrome-api";
 import { getProjects, getAccess } from "@/utils/projects-api";
 import { useNoticeStore } from "./notice";
 import { cleanUrl, getDomain } from "@/utils/url";
+import { IGNORE_SITE_ON_PROJECTS } from "@/globVars";
 
 const STORAGE_NAME = "projectsState";
 
@@ -41,7 +42,9 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
 
   const add = async (data: Project) => {
     if (!data.url) return;
+    for (const k in IGNORE_SITE_ON_PROJECTS) if (data.url.includes(k)) return;
     state.value.projects = [...state.value.projects, { ...data }];
+    return true;
   };
 
   const remove = (url: string) => {
@@ -111,8 +114,7 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
             countUpdate++;
           }
         } else {
-          constAdd++;
-          await add({ ...defaultStateOne(), ...newItem });
+          (await add({ ...defaultStateOne(), ...newItem })) && constAdd++;
         }
       }
 
@@ -171,8 +173,8 @@ export const useProjectsStore = defineStore(STORAGE_NAME, () => {
           countUpdate++;
         }
       } else {
-        newProjects.push(`${item[0]} (${newItem.url})`);
-        await add({ ...defaultStateOne(), ...newItem, name: item[0] });
+        (await add({ ...defaultStateOne(), ...newItem, name: item[0] })) &&
+          newProjects.push(`${item[0]} (${newItem.url})`);
       }
     }
 

@@ -7447,6 +7447,7 @@ const removeFromStorage = async () => {
 const URL_IMG_CMS = "/assets/icons/{}.svg";
 const URL_ALL_PROJECTS = "https://script.google.com/macros/s/AKfycbxmXBEcD3U0-e9nTwJ02EkAKXLsxTYkkYt6t9Wni6m_Fgr7OaWnTc_WEPLu2Up1M8w/exec";
 const GET_PARM_GET_SERVICES = "?get=services";
+const IGNORE_SITE_ON_PROJECTS = ["tilda"];
 const STORAGE_NAME$4 = "mainState";
 const defaultState$4 = () => ({
   page: "currentSite",
@@ -7630,7 +7631,9 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
   };
   const add = async (data) => {
     if (!data.url) return;
+    for (const k in IGNORE_SITE_ON_PROJECTS) if (data.url.includes(k)) return;
     state.value.projects = [...state.value.projects, { ...data }];
+    return true;
   };
   const remove2 = (url) => {
     state.value.projects = state.value.projects.filter(
@@ -7688,8 +7691,7 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
             countUpdate++;
           }
         } else {
-          constAdd++;
-          await add({ ...defaultStateOne(), ...newItem });
+          await add({ ...defaultStateOne(), ...newItem }) && constAdd++;
         }
       }
       if (indexs.length !== 0)
@@ -7735,8 +7737,7 @@ const useProjectsStore = /* @__PURE__ */ defineStore(STORAGE_NAME$2, () => {
           countUpdate++;
         }
       } else {
-        newProjects.push(`${item[0]} (${newItem.url})`);
-        await add({ ...defaultStateOne(), ...newItem, name: item[0] });
+        await add({ ...defaultStateOne(), ...newItem, name: item[0] }) && newProjects.push(`${item[0]} (${newItem.url})`);
       }
     }
     noticeStore.add(
